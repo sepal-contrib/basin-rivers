@@ -1,0 +1,117 @@
+from traitlets import Bool, link
+import ipyvuetify as v
+
+import sepal_ui.sepalwidgets as sw
+import sepal_ui.scripts.utils as su
+
+import component.parameter as param
+from component.message import cm
+
+
+import ee
+
+ee.Initialize()
+
+__all__ = ["InputsView"]
+
+
+class InputsView(v.Card, sw.SepalWidget):
+    """Card to capture all the user inputs
+
+    Args:
+        model (Model): Model to store the widgets
+        map_ (SepalMap): Map to display the output layers
+    """
+
+    valid_dates = Bool(True).tag(sync=True)
+
+    def __init__(self, model, map_, *args, **kwargs):
+
+        self.class_ = "d-block pa-2"
+
+        super().__init__(*args, **kwargs)
+
+        self.model = model
+        self.map_ = map_
+
+        self.alert = sw.Alert()
+
+        self.w_years = v.RangeSlider(
+            label=cm.inputs.year,
+            class_="mt-5",
+            thumb_label="always",
+            min=2000 + param.gfc_min_year,
+            max=2000 + param.gfc_max_year,
+        )
+        self.w_years.v_model = [self.w_years.min, self.w_years.max]
+
+        self.w_thres = v.Slider(
+            label=cm.inputs.thres, class_="mt-5", thumb_label="always", v_model=30
+        )
+
+        self.w_level = v.Select(
+            label=cm.inputs.level.label,
+            items=[
+                {"text": cm.inputs.level.item.format(level), "value": level}
+                for level in param.hybas_levels
+            ],
+            v_model=self.model.level,
+        )
+
+        self.w_lat = v.TextField(
+            label=cm.inputs.lat,
+            v_model=self.model.lat,
+        )
+        self.w_lon = v.TextField(
+            class_="ml-2",
+            label=cm.inputs.lon,
+            v_model=self.model.lon,
+        )
+
+        self.btn = sw.Btn("Get upstream catchments")
+
+        w_coords = v.Flex(class_="d-flex", children=[self.w_lat, self.w_lon])
+
+        self.children = [
+            self.w_years,
+            self.w_thres,
+            self.w_level,
+            w_coords,
+            self.btn,
+            self.alert,
+        ]
+
+        self.model.bind(self.w_years, "years").bind(self.w_thres, "thres").bind(
+            self.w_level, "level"
+        )
+
+        link((self.model, "lat"), (self.w_lat, "v_model"))
+        link((self.model, "lon"), (self.w_lon, "v_model"))
+
+        self.btn.on_event("click", self.get_upstream)
+
+    @su.loading_button(debug=True)
+    def get_upstream(self, *args):
+        """Get the upstream catchments from the given coordinates"""
+        
+        # Remove previous loaded layers
+        self.map_.remove_layers()
+
+        geometry = ee.Geometry.Point((self.model.lon, self.model.lat))
+        self.model.get_upstream_basin_ids(geometry)
+        
+        upstream_catch = self.model.get_upstream_fc()
+
+        forest_change = self.model.get_gfc(upstream_catch.geometry())
+        
+        # Get bounds and zoom to the object
+        bounds = self.model.get_bounds(upstream_catch)
+        self.map_.zoom_bounds(bounds)
+        
+        self.map_.addLayer(forest_change.randomVisualizer(), {}, "Forest change")
+        
+        outline = ee.Image().byte().paint(
+            featureCollection=upstream_catch, color=1, width=3
+        )
+
+        self.map_.addLayer(outline, param.basinbound_vis, "Upstream catchment")
