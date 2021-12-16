@@ -2,6 +2,7 @@ import ee
 ee.Initialize()
 
 from traitlets import Bool, link
+from ipywidgets import Output
 import ipyvuetify as v
 
 from sepal_ui import color as sc
@@ -12,7 +13,29 @@ import sepal_ui.scripts.utils as su
 import component.parameter as param
 from component.message import cm
 
-__all__ = ["BasinView"]
+__all__ = ["BasinView", "Dashboard"]
+
+
+class Dashboard(v.Card, sw.SepalWidget):
+    
+    def __init__(self, *args, **kwargs):
+
+        self.class_ = "d-block pa-2 mt-4"
+
+        super().__init__(*args, **kwargs)
+        
+        title = v.CardTitle(children=['Statistics'])
+        # desc = v.CardText(children=['Statistics'])
+        self.alert = sw.Alert()
+        
+        self.output = Output()
+        
+        self.children=[
+            title,
+            # desc,
+            self.output,
+        ]
+
 
 
 class BasinView(v.Card, sw.SepalWidget):
@@ -26,7 +49,7 @@ class BasinView(v.Card, sw.SepalWidget):
     all_item = [{'text': "All catchments",'value':'all'}]
 
 
-    def __init__(self, model, map_, *args, **kwargs):
+    def __init__(self, model, map_, dashboard, *args, **kwargs):
 
         self.class_ = "d-block pa-2 mt-4"
 
@@ -35,7 +58,12 @@ class BasinView(v.Card, sw.SepalWidget):
         self.model = model
         self.map_ = map_
         
+        title = v.CardTitle(children=['Statistics'])
+        desc = v.CardText()
+        
         self.alert = sw.Alert()
+        
+        self.w_output = dashboard
 
         self.w_hybasid = v.Select(
             label=cm.basin.basinid.label,
@@ -48,7 +76,7 @@ class BasinView(v.Card, sw.SepalWidget):
         
         self.btn = sw.Btn('Calculate statistics')
         
-        self.children = [self.w_hybasid, self.btn, self.alert]
+        self.children = [title, desc, self.w_hybasid, self.btn, self.alert]
         
         self.model.observe(self.fill_catchs, 'hybasin_list')
         self.w_hybasid.observe(self.zoom_to_selected, 'v_model')
@@ -62,8 +90,47 @@ class BasinView(v.Card, sw.SepalWidget):
         hybas_id = self.w_hybasid.v_model
         
         zonal_statistics = self.model.calculate_statistics(hybas_id)
-        self.df = self.model.get_dataframe(zonal_statistics)
         
+        df = self.model.get_dataframe(zonal_statistics)
+        df = df.sort_values(by=['basin','variable'])
+        self.df = df[df["variable"] < 30]
+        
+
+        with self.w_output.output:
+            
+            self.w_output.output.clear_output()
+            
+            agg_tips = self.df.groupby(
+                ['basin', 'variable']
+            )['area'].sum().unstack().fillna(0).T
+
+            
+            import seaborn as sns
+            
+            sns.set_theme(style="darkgrid")
+            sns.set(rc={'figure.figsize':(20,8.27)})
+
+            
+            import numpy as np
+            from matplotlib import pyplot as plt
+
+            fig, ax = plt.subplots()
+
+            # Initialize the bottom at zero for the first set of bars.
+            bottom = np.zeros(len(agg_tips))
+
+            # Plot each layer of the bar, adding each bar to the "bottom" so
+            # the next bar starts higher.
+            for i, col in enumerate(agg_tips.columns):
+                ax.bar([f'{i + 2000}' for i in self.df["variable"].unique()], agg_tips[col], bottom=bottom, label=col)
+                bottom += np.array(agg_tips[col])
+
+            ax.set_title('Deforested area')
+            ax.legend()
+            
+            self.fig = fig
+            display(fig)
+
 
     def fill_catchs(self, change):
         """Fill the selection widget list with the gathered"""
