@@ -158,7 +158,7 @@ class BasinModel(Model):
         )
         
         return (
-            ee.Image.pixelArea()
+            ee.Image.pixelArea().divide(10000)
             .addBands(self.get_gfc(feature_collection))
             .reduceRegions(
                 collection=feature_collection, 
