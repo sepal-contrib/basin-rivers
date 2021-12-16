@@ -35,6 +35,9 @@ class InputsView(v.Card, sw.SepalWidget):
         self.map_ = map_
 
         self.alert = sw.Alert()
+        
+        title = v.CardTitle(children=['Parameters'])
+        desc = v.CardText()
 
         self.w_years = v.RangeSlider(
             label=cm.inputs.year,
@@ -73,10 +76,13 @@ class InputsView(v.Card, sw.SepalWidget):
         w_coords = v.Flex(class_="d-flex", children=[self.w_lat, self.w_lon])
 
         self.children = [
+            title,
+            desc,
+            w_coords,
+            self.w_level,
+            v.Divider(class_='mb-6'),
             self.w_years,
             self.w_thres,
-            self.w_level,
-            w_coords,
             self.btn,
             self.alert,
         ]
@@ -102,16 +108,16 @@ class InputsView(v.Card, sw.SepalWidget):
         
         upstream_catch = self.model.get_upstream_fc()
 
-        forest_change = self.model.get_gfc(upstream_catch.geometry())
+        forest_change = self.model.get_gfc(upstream_catch.geometry()).set(param.gfc_vis)
         
         # Get bounds and zoom to the object
         bounds = self.model.get_bounds(upstream_catch)
         self.map_.zoom_bounds(bounds)
         
-        self.map_.addLayer(forest_change.randomVisualizer(), {}, "Forest change")
+        self.map_.addLayer(forest_change, {}, "Forest change")
         
         outline = ee.Image().byte().paint(
-            featureCollection=upstream_catch, color=1, width=3
+            featureCollection=upstream_catch, color=1, width=2
         )
 
         self.map_.addLayer(outline, param.basinbound_vis, "Upstream catchment")
