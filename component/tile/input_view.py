@@ -53,6 +53,7 @@ class InputsView(v.Card, sw.SepalWidget):
         )
 
         self.w_level = v.Select(
+            class_='mb-3',
             label=cm.inputs.level.label,
             items=[
                 {"text": cm.inputs.level.item.format(level), "value": level}
@@ -80,7 +81,6 @@ class InputsView(v.Card, sw.SepalWidget):
             desc,
             w_coords,
             self.w_level,
-            v.Divider(class_='mb-6'),
             self.w_years,
             self.w_thres,
             self.btn,

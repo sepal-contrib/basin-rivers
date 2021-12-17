@@ -28,11 +28,16 @@ class Dashboard(v.Card, sw.SepalWidget):
         # desc = v.CardText(children=['Statistics'])
         self.alert = sw.Alert()
         
+        self.btn_csv = sw.Btn('Download .csv file', class_='mr-2 mb-2').hide()
+        self.btn_pdf = sw.Btn('Download .pdf report', class_ = 'mb-2').hide()
+        
         self.output = Output()
         
         self.children=[
             title,
             # desc,
+            self.btn_csv,
+            self.btn_pdf,
             self.output,
         ]
 
@@ -63,7 +68,7 @@ class BasinView(v.Card, sw.SepalWidget):
         
         self.alert = sw.Alert()
         
-        self.w_output = dashboard
+        self.dashboard = dashboard
 
         self.w_hybasid = v.Select(
             label=cm.basin.basinid.label,
@@ -95,10 +100,12 @@ class BasinView(v.Card, sw.SepalWidget):
         df = df.sort_values(by=['basin','variable'])
         self.df = df[df["variable"] < 30]
         
+        self.dashboard.btn_pdf.show()
+        self.dashboard.btn_csv.show()
 
-        with self.w_output.output:
+        with self.dashboard.output:
             
-            self.w_output.output.clear_output()
+            self.dashboard.output.clear_output()
             
             agg_tips = self.df.groupby(
                 ['basin', 'variable']
@@ -167,7 +174,7 @@ class BasinView(v.Card, sw.SepalWidget):
             self.map_.zoom_bounds(bounds)
 
             outline = ee.Image().byte().paint(
-                featureCollection=selected, color=1, width=3
+                featureCollection=selected, color=1, width=2
             )
             
             self.map_.addLayer(outline, param.selected_vis, 'Selection')
