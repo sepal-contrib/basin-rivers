@@ -1,5 +1,6 @@
 import random
 import ee
+from ipyleaflet import Marker
 
 import component.parameter as param
 
@@ -37,4 +38,15 @@ def color_basin(fc):
     
     return color_fc, vis_params
 
+def get_marker(coordinates):
+    """Return a marker in the given coordinates"""
 
+    marker = Marker(
+        location=coordinates, 
+        draggable=False, 
+    )
+
+    marker.__setattr__('_metadata', {'type':'marker'})
+    marker.__setattr__('name', param.marker_name)
+
+    return marker

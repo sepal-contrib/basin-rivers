@@ -33,5 +33,9 @@ hybas_levels = list(range(5,13))
 selected_vis = {"palette": 'red'}
 basinbound_vis = {"palette": 'black'}
 
+# Create a name to the marker point in the map
+
+marker_name = 'Marker'
+
 
 
