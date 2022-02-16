@@ -32,7 +32,7 @@ class MapTile(SepalMap):
 
         self.trash_btn = v.Btn(
             children=[v.Icon(children=["fa fa-trash"], small=True)], small=True
-        ).hide()
+        )
         trash_control = WidgetControl(
             widget=sw.Tooltip(self.trash_btn, "Remove point", right=True),
             position="topleft",

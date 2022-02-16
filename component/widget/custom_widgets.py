@@ -41,7 +41,7 @@ class link(traitlets_link):
             pass
 
 
-class CoordinatesView(v.Flex, sw.SepalWidget):
+class CoordinatesView(v.Layout, sw.SepalWidget):
     """Card to capture, and send coordinates to the map through a marker
 
     Args:
@@ -51,16 +51,21 @@ class CoordinatesView(v.Flex, sw.SepalWidget):
 
     def __init__(self, model, map_, *args, **kwargs):
 
-        self.class_ = "d-flex align-center"
+        self.class_ = "d-flex align-center flex-wrap justify-space-between pa-4"
 
         super().__init__(*args, **kwargs)
 
         self.model = model
         self.map_ = map_
 
-        self.w_manual = v.Switch(v_model=True, label="Manual", class_="mr-2")
+        self.w_manual = v.Switch(
+            class_="mr-2 ",
+            v_model=True, 
+            label="Manual", 
+        )
 
         self.w_lat = v.TextField(
+            class_='d-flex',
             label=cm.inputs.lat,
             v_model=self.model.lat,
             disabled=True,
@@ -78,9 +83,23 @@ class CoordinatesView(v.Flex, sw.SepalWidget):
             color="primary",
             small=True,
             disabled=True,
+            block=True,
         )
+        
+        widgets = [self.w_manual, self.w_lat, self.w_lon, self.btn_use]
 
-        self.children = [self.w_manual, self.w_lat, self.w_lon, self.btn_use]
+        self.children = [
+            v.Flex(xs12=True, children=[widget]) for widget in widgets
+        ]
+        
+        xs = ['sm3','sm4','sm4','sm1']
+        md = ['md2','md4','md4','md2']
+        
+        [
+            (setattr(w, xs, True), setattr(w, md, True)) 
+            for w, xs, md
+            in zip(self.children, xs, md)
+        ]
 
         link((self.model, "manual"), (self.w_manual, "v_model"))
 
