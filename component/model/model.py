@@ -21,15 +21,16 @@ class BasinModel(Model):
     
     level = Int(6).tag(sync=True)
     "int: target level of the catchment"
-    
-    disable_coords = Bool(False).tag(sync=True)
-    "bool: whether to stop capturing the coordinates or not"
-    
+        
     hybasin_id = List(['all']).tag(sync=True)
     "list: current selected hybasid(s) from the dropdown base list"
     
     hybasin_list = List().tag(sync=True)
     "list: hybasin id list of upstream catchments"
+    
+    manual = Bool(False).tag(sync=True)
+    "bool: wheter to set the coordinates manually or not"
+    
     
     def __init__(self):
         """
@@ -46,6 +47,9 @@ class BasinModel(Model):
         self.base_basin = None
         self.upstream_catchs = None
         self.forest_change = None
+        
+        self.lat_link = False
+        self.lon_link = False
     
         
     def get_upstream_basin_ids(self, geometry, max_steps=100):
