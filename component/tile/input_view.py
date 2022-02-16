@@ -26,7 +26,7 @@ class InputsView(v.Card, sw.SepalWidget):
     """
 
     valid_dates = Bool(True).tag(sync=True)
-    
+
     deactivate_coords = Bool(True).tag(sync=True)
     """Wheter to active the coordinates the coordinate fields or not"""
 
@@ -40,8 +40,8 @@ class InputsView(v.Card, sw.SepalWidget):
         self.map_ = map_
 
         self.alert = sw.Alert()
-        
-        title = v.CardTitle(children=['Parameters'])
+
+        title = v.CardTitle(children=["Parameters"])
         desc = v.CardText()
 
         self.w_years = v.RangeSlider(
@@ -58,7 +58,7 @@ class InputsView(v.Card, sw.SepalWidget):
         )
 
         self.w_level = v.Select(
-            class_='mb-3',
+            class_="mb-3",
             label=cm.inputs.level.label,
             items=[
                 {"text": cm.inputs.level.item.format(level), "value": level}
@@ -66,9 +66,8 @@ class InputsView(v.Card, sw.SepalWidget):
             ],
             v_model=self.model.level,
         )
-        
+
         self.w_coords = cw.CoordinatesView(model=model, map_=map_)
-        
 
         self.btn = sw.Btn("Get upstream catchments")
 
@@ -88,30 +87,29 @@ class InputsView(v.Card, sw.SepalWidget):
         )
 
         self.btn.on_event("click", self.get_upstream)
-        
 
     @su.loading_button(debug=True)
     def get_upstream(self, *args):
         """Get the upstream catchments from the given coordinates"""
-        
+
         # Remove previous loaded layers
         self.map_.remove_layers()
 
         geometry = ee.Geometry.Point((self.model.lon, self.model.lat))
         self.model.get_upstream_basin_ids(geometry)
-        
+
         upstream_catch = self.model.get_upstream_fc()
 
         forest_change = self.model.get_gfc(upstream_catch.geometry()).set(param.gfc_vis)
-        
+
         # Get bounds and zoom to the object
         bounds = self.model.get_bounds(upstream_catch)
         self.map_.zoom_bounds(bounds)
-        
+
         self.map_.addLayer(forest_change, {}, "Forest change")
-        
-        outline = ee.Image().byte().paint(
-            featureCollection=upstream_catch, color=1, width=2
+
+        outline = (
+            ee.Image().byte().paint(featureCollection=upstream_catch, color=1, width=2)
         )
 
         self.map_.addLayer(outline, param.basinbound_vis, "Upstream catchment")

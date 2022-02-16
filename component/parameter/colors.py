@@ -5,6 +5,7 @@ from .app import year_range, gfc_labels, gfc_classes
 
 __all__ = ["gfc_vis"]
 
+
 def color_fader(v=0):
     """return a rgb (0-255) tuple corresponding the v value in a 19
     spaces gradient between yellow and darkred"""
