@@ -5,6 +5,7 @@ import sepal_ui.sepalwidgets as sw
 from sepal_ui.mapping import SepalMap
 import ipyvuetify as v
 
+import component.widget as cw
 import component.scripts.utils as cu
 import component.parameter as param
 
@@ -37,6 +38,14 @@ class MapTile(SepalMap):
             widget=sw.Tooltip(self.trash_btn, "Remove point", right=True),
             position="topleft",
         )
+
+        self.metadata_table = cw.MetadataTable()
+
+        metadata_control = WidgetControl(
+            widget=self.metadata_table, position="bottomleft"
+        )
+
+        self.add_control(metadata_control)
         self.add_control(trash_control)
 
         dlink((self, "lat"), (self.model, "lat"))
