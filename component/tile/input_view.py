@@ -1,4 +1,5 @@
 from traitlets import Bool, link
+from ipyleaflet import GeoJSON
 import ipyvuetify as v
 
 import sepal_ui.sepalwidgets as sw
@@ -8,6 +9,9 @@ import component.scripts.utils as cu
 import component.parameter as param
 import component.widget as cw
 from component.message import cm
+
+from geopandas import GeoDataFrame
+from geemap import ee_to_geojson
 
 
 import ee
@@ -100,16 +104,31 @@ class InputsView(v.Card, sw.SepalWidget):
 
         upstream_catch = self.model.get_upstream_fc()
 
+        self.model.data = ee_to_geojson(upstream_catch)
+
+        # Create GeoJSON ipyleaflet object
+        upstream_catch_gj = GeoJSON(
+            data=self.model.data,
+            name="Upstream catchment",
+            style={"fillOpacity": 0.1, "weight": 2},
+            hover_style={"color": "white", "dashArray": "0", "fillOpacity": 0.5},
+        )
+
+        def update_info(feature, **kargs):
+            """Update map box and display feature properties"""
+            self.map_.metadata_table.update(feature["properties"])
+
+        upstream_catch_gj.on_hover(update_info)
+
         forest_change = self.model.get_gfc(upstream_catch.geometry()).set(param.gfc_vis)
 
         # Get bounds and zoom to the object
-        bounds = self.model.get_bounds(upstream_catch)
-        self.map_.zoom_bounds(bounds)
+        self.map_.zoom_bounds(self.model.get_bounds(self.model.data))
 
         self.map_.addLayer(forest_change, {}, "Forest change")
 
-        outline = (
-            ee.Image().byte().paint(featureCollection=upstream_catch, color=1, width=2)
-        )
+        # outline = (
+        #     ee.Image().byte().paint(featureCollection=upstream_catch, color=1, width=2)
+        # )
 
-        self.map_.addLayer(outline, param.basinbound_vis, "Upstream catchment")
+        self.map_.add_layer(upstream_catch_gj)

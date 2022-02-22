@@ -9,6 +9,8 @@ import component.scripts as cs
 import component.parameter as param
 
 import ee
+import json
+from geopandas import GeoDataFrame
 
 ee.Initialize()
 
@@ -43,6 +45,7 @@ class BasinModel(Model):
                 the given point at the given level using the base_basin.
             forest_change (ee.Image): forest change mas within the given upstream
                 catchments at the given livel using the base basin.
+            data (dict): upstream catchments in a geojson format
         """
 
         self.base_basin = None
@@ -51,6 +54,8 @@ class BasinModel(Model):
 
         self.lat_link = False
         self.lon_link = False
+
+        self.data = None
 
     def get_upstream_basin_ids(self, geometry, max_steps=100):
         """Return a list with all uperstream catchments ids from the base basin
@@ -156,14 +161,33 @@ class BasinModel(Model):
 
         return forest_change
 
-    def get_selected(self, hybas_ids):
-        """Return the selected Feature Collection
+    def get_selected(self, hybas_ids, from_json=False):
+        """Return the selected Feature Collection or geojson dict
 
         hybas_ids (list): hydrobasin id's to calculate statistics.
 
         """
 
+        if from_json:
+            gdf = GeoDataFrame.from_features(self.data["features"])
+            return json.loads(gdf[gdf["HYBAS_ID"].isin(hybas_ids)].to_json())
+
         return self.base_basin.filter(ee.Filter.inList("HYBAS_ID", hybas_ids))
+
+    @staticmethod
+    def get_bounds(dataset):
+        """Get bounds of the given feature collection"""
+
+        if isinstance(dataset, ee.FeatureCollection):
+
+            ee_bounds = dataset.geometry().bounds().coordinates()
+            coords = ee_bounds.get(0).getInfo()
+            ll, ur = coords[0], coords[2]
+            return ll[0], ll[1], ur[0], ur[1]
+
+        elif isinstance(dataset, dict):
+
+            return list(GeoDataFrame.from_features(dataset["features"]).total_bounds)
 
     def calculate_statistics(self, hybas_ids=["all"]):
         """Get hydrobasin id statistics on the given hybasin_id
@@ -191,15 +215,6 @@ class BasinModel(Model):
                 scale=ee.Image(param.gfc_dataset).projection().nominalScale(),
             )
         ).getInfo()
-
-    @staticmethod
-    def get_bounds(feature_collection):
-        """Get bounds of the given feature collection"""
-
-        ee_bounds = feature_collection.geometry().bounds().coordinates()
-        coords = ee_bounds.get(0).getInfo()
-        ll, ur = coords[0], coords[2]
-        return ll[0], ll[1], ur[0], ur[1]
 
     @staticmethod
     def get_dataframe(result):

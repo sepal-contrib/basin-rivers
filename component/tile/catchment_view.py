@@ -4,6 +4,7 @@ ee.Initialize()
 
 from traitlets import Bool, link
 from ipywidgets import Output
+from ipyleaflet import GeoJSON
 import ipyvuetify as v
 
 from sepal_ui import color as sc
@@ -13,6 +14,7 @@ import sepal_ui.scripts.utils as su
 
 import component.parameter as param
 from component.message import cm
+
 
 __all__ = ["BasinView", "Dashboard"]
 
@@ -155,6 +157,8 @@ class BasinView(v.Card, sw.SepalWidget):
     def zoom_to_selected(self, change):
         """Highlight selection and zoom over it"""
 
+        self.map_.remove_layers_if("name", "Selected")
+
         if not change["new"]:
             return
 
@@ -162,22 +166,30 @@ class BasinView(v.Card, sw.SepalWidget):
 
             # deselect previous selected elements
             self.w_hybasid.v_model = ["all"]
-            bounds = self.model.get_bounds(self.model.get_upstream_fc())
-            self.map_.remove_layers_if("name", "Selection")
-            self.map_.zoom_bounds(bounds)
+            self.map_.zoom_bounds(self.model.get_bounds(self.model.data))
 
         else:
+            # Deselect "all catchments" option
             self.w_hybasid.v_model = [
                 id_ for id_ in self.w_hybasid.v_model if id_ != "all"
             ]
+
             # Get bounds and zoom to the object
-            selected = self.model.get_selected(change["new"])
+            selected = self.model.get_selected(change["new"], from_json=True)
             bounds = self.model.get_bounds(selected)
+
+            selected = GeoJSON(
+                data=selected,
+                name="Selected",
+                style={"fillOpacity": 0.1, "weight": 2, "color": "white"},
+            )
 
             self.map_.zoom_bounds(bounds)
 
-            outline = (
-                ee.Image().byte().paint(featureCollection=selected, color=1, width=2)
-            )
+            # This line is useful when paiting a feature collecitonm
+            # Not useful when using geopandas
+            # outline = (
+            #     ee.Image().byte().paint(featureCollection=selected, color=1, width=2)
+            # )
 
-            self.map_.addLayer(outline, param.selected_vis, "Selection")
+            self.map_.add_layer(selected)
