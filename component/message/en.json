@@ -12,6 +12,17 @@
     "basin" : {
         "basinid" : {
             "label" : "Hydrobasin id"
+        },
+        "type" : {
+            "label": "Selection method",
+            "all":"Use all catchments (no filter)",
+            "filter":"Filter by id"
+        }
+    },
+    "map": {
+        "trash" : {
+            "trash_point" : "Remove point",
+            "trash_selection" : "Remove selection"
         }
     }
 }

@@ -8,6 +8,7 @@ import ipyvuetify as v
 import component.widget as cw
 import component.scripts.utils as cu
 import component.parameter as param
+from component.message import cm
 
 
 class MapTile(SepalMap):
@@ -31,28 +32,31 @@ class MapTile(SepalMap):
         self.zoom = 10
         self.center = [self.lat, self.lon]
 
-        self.trash_btn = v.Btn(
-            children=[v.Icon(children=["fa fa-trash"], small=True)], small=True
-        )
+        self.trash_btn = TrashMenu()
+        
         trash_control = WidgetControl(
-            widget=sw.Tooltip(self.trash_btn, "Remove point", right=True),
+            widget=self.trash_btn, 
             position="topleft",
         )
-
+        
         self.metadata_table = cw.MetadataTable()
 
         metadata_control = WidgetControl(
-            widget=self.metadata_table, position="bottomleft"
+            widget=self.metadata_table,
+            position="topleft"
         )
-
-        self.add_control(metadata_control)
+        
         self.add_control(trash_control)
+        self.add_control(metadata_control)
+        
 
         dlink((self, "lat"), (self.model, "lat"))
         dlink((self, "lon"), (self.model, "lon"))
 
         self.on_interaction(self.return_coordinates)
-        self.trash_btn.on_event("click", self.trash_event)
+        
+        self.trash_btn.on_event("trash_point", self.trash_event)
+        self.trash_btn.on_event("trash_selection", self.trash_event)
 
     def add_layer(self, layer):
         """Add layer and check its name"""
@@ -62,21 +66,27 @@ class MapTile(SepalMap):
 
         super().add_layer(layer)
 
-    def trash_event(self, *args):
+    def trash_event(self, widget, event, data):
         """restore coordinates and link lat-lon widgets"""
+        
+        if widget._metadata["name"] == "trash_point":
+            self.restore_coordinates()
 
-        self.restore_coordinates()
-
-        # Link widgets again if automatic (not manual) is selected
-        if not self.model.manual:
-            self.model.lat_link.link()
-            self.model.lon_link.link()
+            # Link widgets again if automatic (not manual) is selected
+            if not self.model.manual:
+                self.model.lat_link.link()
+                self.model.lon_link.link()
+        
+        elif widget._metadata["name"] == "trash_selection":
+            
+            self.model.selected_hybas = []
 
     def restore_coordinates(self, *args):
         """Remove marker and restore coordinates"""
 
         self.remove_layers_if("type", "marker", _metadata=True)
         self.lat, self.lon = [round(x, 3) for x in self.center]
+        self.model.marker = False
 
     def return_coordinates(self, **kwargs):
 
@@ -100,10 +110,10 @@ class MapTile(SepalMap):
 
             # Remove markdown if there is one
             self.remove_layers_if("type", "marker", _metadata=True)
-            self.remove_layers_if("type", "square", _metadata=True)
 
             marker = cu.get_marker(kwargs.get("coordinates"))
             self.add_layer(marker)
+            self.model.marker=True
 
     def remove_layers_if(self, prop, equals_to, _metadata=False):
         """Remove layers with a given property and value
@@ -135,3 +145,53 @@ class MapTile(SepalMap):
             for layer in self.layers
             if layer.name not in keep_layers
         ]
+
+        
+        
+class TrashMenu(sw.Menu):
+    
+    def __init__(self, *args, **kwargs):
+        
+        super().__init__(*args, **kwargs)
+        
+        self.offset_x=True
+        
+        trash_btn = v.Btn(
+            v_on="menuData.on",
+            small=True,
+            children=[
+                v.Icon(children=["fa fa-trash"], small=True),
+                v.Icon(children=["fa fa-caret-down"], small=True, right=True),
+            ], 
+        )
+
+        self.v_slots=[{
+            'name': 'activator',
+            'variable': 'menuData',
+            'children': trash_btn,
+        }]
+        
+        self.items = [
+            v.ListItem(
+                _metadata={"name":title},
+                children=[
+                    v.ListItemTitle(children=[eval(f"cm.map.trash.{title}")]),
+                ]
+            ) for title in ['trash_point', 'trash_selection']
+        ]
+        
+        self.children=[v.List(dense=True, children=self.items), ]
+        
+    
+    def on_event(self, name, event):
+        """Define an event based on the item name"""
+        
+        for item in self.items:
+            if item._metadata["name"]==name:
+                item.on_event('click', event)
+                
+                
+                
+                
+            
+        

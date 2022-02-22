@@ -29,3 +29,7 @@ basinbound_vis = {"palette": "black"}
 # Create a name to the marker point in the map
 
 marker_name = "Marker"
+
+
+# Catchment properties to display
+display_prop = ["HYBAS_ID"]
