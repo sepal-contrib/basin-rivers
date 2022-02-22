@@ -61,12 +61,12 @@ class CoordinatesView(v.Layout, sw.SepalWidget):
 
         self.w_manual = v.Switch(
             class_="mr-2 ",
-            v_model=True, 
-            label="Manual", 
+            v_model=True,
+            label="Manual",
         )
 
         self.w_lat = v.TextField(
-            class_='d-flex',
+            class_="d-flex",
             label=cm.inputs.lat,
             v_model=self.model.lat,
             disabled=True,
@@ -86,21 +86,17 @@ class CoordinatesView(v.Layout, sw.SepalWidget):
             disabled=True,
             block=True,
         )
-        
+
         widgets = [self.w_manual, self.w_lat, self.w_lon, self.btn_use]
 
-        self.children = [
-            v.Flex(xs12=True, children=[widget]) for widget in widgets
-        ]
-        
-        xs = ['sm3','sm4','sm4','sm1']
-        md = ['md4','md3','md3','md2']
-        
-        
+        self.children = [v.Flex(xs12=True, children=[widget]) for widget in widgets]
+
+        xs = ["sm3", "sm4", "sm4", "sm1"]
+        md = ["md4", "md3", "md3", "md2"]
+
         [
-            (setattr(w, xs, True), setattr(w, md, True)) 
-            for w, xs, md
-            in zip(self.children, xs, md)
+            (setattr(w, xs, True), setattr(w, md, True))
+            for w, xs, md in zip(self.children, xs, md)
         ]
 
         link((self.model, "manual"), (self.w_manual, "v_model"))
@@ -144,6 +140,7 @@ class CoordinatesView(v.Layout, sw.SepalWidget):
             self.model.lat_link.link()
             self.model.lon_link.link()
 
+
 class MetadataTable(sw.Card):
     """Widget to get a simple table displaying the metadata of catchments"""
 
@@ -163,7 +160,7 @@ class MetadataTable(sw.Card):
         Args:
             data (list of lists): Each element has to follow: [header, value]
         """
-        
+
         self.show()
 
         def get_row(header, value):
@@ -174,7 +171,8 @@ class MetadataTable(sw.Card):
 
         rows = [
             sw.Html(tag="tr", children=get_row(str(row_header), str(row_value)))
-            for row_header, row_value in data.items() if row_header in param.display_prop
+            for row_header, row_value in data.items()
+            if row_header in param.display_prop
         ]
 
         self.children = [

@@ -14,7 +14,6 @@ from geopandas import GeoDataFrame
 from geemap import ee_to_geojson
 
 
-
 import ee
 
 ee.Initialize()
@@ -96,7 +95,7 @@ class InputsView(v.Card, sw.SepalWidget):
     @su.loading_button(debug=True)
     def get_upstream(self, *args):
         """Get the upstream catchments from the given coordinates"""
-        
+
         if not self.model.marker:
             raise Exception("Please select a point in the map")
         # Remove previous loaded layers
@@ -106,21 +105,21 @@ class InputsView(v.Card, sw.SepalWidget):
         self.model.get_upstream_basin_ids(geometry)
 
         upstream_catch = self.model.get_upstream_fc()
-        
+
         self.model.data = ee_to_geojson(upstream_catch)
-        
+
         # Create GeoJSON ipyleaflet object
         upstream_catch_gj = GeoJSON(
-            data = self.model.data,
+            data=self.model.data,
             name="Upstream catchment",
             style={"fillOpacity": 0.1, "weight": 2},
             hover_style={"color": "white", "dashArray": "0", "fillOpacity": 0.5},
         )
-        
+
         def update_info(feature, **kargs):
             """Update map box and display feature properties"""
-            self.map_.metadata_table.update(feature['properties'])
-        
+            self.map_.metadata_table.update(feature["properties"])
+
         upstream_catch_gj.on_hover(update_info)
 
         forest_change = self.model.get_gfc(upstream_catch.geometry()).set(param.gfc_vis)

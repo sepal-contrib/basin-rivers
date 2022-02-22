@@ -33,28 +33,24 @@ class MapTile(SepalMap):
         self.center = [self.lat, self.lon]
 
         self.trash_btn = TrashMenu()
-        
+
         trash_control = WidgetControl(
-            widget=self.trash_btn, 
+            widget=self.trash_btn,
             position="topleft",
         )
-        
+
         self.metadata_table = cw.MetadataTable()
 
-        metadata_control = WidgetControl(
-            widget=self.metadata_table,
-            position="topleft"
-        )
-        
+        metadata_control = WidgetControl(widget=self.metadata_table, position="topleft")
+
         self.add_control(trash_control)
         self.add_control(metadata_control)
-        
 
         dlink((self, "lat"), (self.model, "lat"))
         dlink((self, "lon"), (self.model, "lon"))
 
         self.on_interaction(self.return_coordinates)
-        
+
         self.trash_btn.on_event("trash_point", self.trash_event)
         self.trash_btn.on_event("trash_selection", self.trash_event)
 
@@ -68,7 +64,7 @@ class MapTile(SepalMap):
 
     def trash_event(self, widget, event, data):
         """restore coordinates and link lat-lon widgets"""
-        
+
         if widget._metadata["name"] == "trash_point":
             self.restore_coordinates()
 
@@ -76,9 +72,9 @@ class MapTile(SepalMap):
             if not self.model.manual:
                 self.model.lat_link.link()
                 self.model.lon_link.link()
-        
+
         elif widget._metadata["name"] == "trash_selection":
-            
+
             self.model.selected_hybas = []
 
     def restore_coordinates(self, *args):
@@ -113,7 +109,7 @@ class MapTile(SepalMap):
 
             marker = cu.get_marker(kwargs.get("coordinates"))
             self.add_layer(marker)
-            self.model.marker=True
+            self.model.marker = True
 
     def remove_layers_if(self, prop, equals_to, _metadata=False):
         """Remove layers with a given property and value
@@ -146,52 +142,48 @@ class MapTile(SepalMap):
             if layer.name not in keep_layers
         ]
 
-        
-        
+
 class TrashMenu(sw.Menu):
-    
     def __init__(self, *args, **kwargs):
-        
+
         super().__init__(*args, **kwargs)
-        
-        self.offset_x=True
-        
+
+        self.offset_x = True
+
         trash_btn = v.Btn(
             v_on="menuData.on",
             small=True,
             children=[
                 v.Icon(children=["fa fa-trash"], small=True),
                 v.Icon(children=["fa fa-caret-down"], small=True, right=True),
-            ], 
+            ],
         )
 
-        self.v_slots=[{
-            'name': 'activator',
-            'variable': 'menuData',
-            'children': trash_btn,
-        }]
-        
+        self.v_slots = [
+            {
+                "name": "activator",
+                "variable": "menuData",
+                "children": trash_btn,
+            }
+        ]
+
         self.items = [
             v.ListItem(
-                _metadata={"name":title},
+                _metadata={"name": title},
                 children=[
                     v.ListItemTitle(children=[eval(f"cm.map.trash.{title}")]),
-                ]
-            ) for title in ['trash_point', 'trash_selection']
+                ],
+            )
+            for title in ["trash_point", "trash_selection"]
         ]
-        
-        self.children=[v.List(dense=True, children=self.items), ]
-        
-    
+
+        self.children = [
+            v.List(dense=True, children=self.items),
+        ]
+
     def on_event(self, name, event):
         """Define an event based on the item name"""
-        
+
         for item in self.items:
-            if item._metadata["name"]==name:
-                item.on_event('click', event)
-                
-                
-                
-                
-            
-        
+            if item._metadata["name"] == name:
+                item.on_event("click", event)
