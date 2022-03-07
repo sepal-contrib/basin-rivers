@@ -13,7 +13,7 @@ import component.parameter as cp
 from component.message import cm
 import component.parameter.fig_styles as styles
 
-__all__ = ["StatSettingCard", "OverallPieCard"]
+__all__ = ["StatSettingCard", "OverallPieCard", "DetailedStat", ]
 
 
 class StatSettingCard(cw.Card):
@@ -193,3 +193,242 @@ class OverallPieCard(cw.Card):
         self.overall_pie_fig.update_traces(
             pull=cw.get_pull(self.grouped_df, *update_params)
         )
+        
+        
+class DetailedStat(sw.Layout):
+    """Detailed statistics dashboard. It will show specific statistics
+    for the selected variable, range date and selected basins.
+    """
+
+    def __init__(self, model, *args, **kwargs):
+
+        self.class_ = "d-flex flex-wrap"
+
+        super().__init__(*args, **kwargs)
+
+        self.model = model
+        self.base_df = self.model.data
+        self.base_df_year = None
+
+        self.catchment_bar_fig = self.get_catch_bar()
+        self.catchment_pie_fig = self.get_catch_pie(
+            **style.pie_layout, **style.legend_detailed_pie
+        )
+
+        self.trend_fig = self.get_trend_fig(**style.trend_layout, **style.trend_legend)
+
+        self.trend_card = sw.Card(children=[self.trend_fig]).hide()
+
+        self.children = [
+            v.Flex(
+                row=True,
+                class_="d-flex flex-wrap",
+                children=[
+                    v.Flex(
+                        xs12=True,
+                        sm5=True,
+                        children=[
+                            cw.Card(
+                                class_="mr-sm-2 mb-sm-4",
+                                children=[
+                                    self.catchment_pie_fig,
+                                ],
+                            )
+                        ],
+                    ),
+                    v.Flex(
+                        xs12=True,
+                        sm7=True,
+                        children=[
+                            cw.Card(
+                                children=[
+                                    self.catchment_bar_fig,
+                                ]
+                            )
+                        ],
+                    ),
+                ],
+            ),
+            v.Flex(row=True, class_="d-block", x12=True, children=[self.trend_card]),
+        ]
+
+        # Events
+        self.model.observe(self.update_traces, "selected_hybasid_chart")
+        self.model.observe(self.update_traces, "selected_var")
+        self.model.observe(self.update_traces, "sett_timespan")
+
+        # Trigger the first event
+        self.update_traces(_)
+
+    @staticmethod
+    def get_catch_bar_trace(x, y, **extra_bar_args):
+        """Convenient method to be used multiple times using predefined styles"""
+
+        # Create a trace
+        return go.Bar(
+            x=x,
+            y=y,
+            **extra_bar_args,
+            **style.bar_trace_options,
+        )
+
+    @staticmethod
+    def get_trend_trace(x, y, **extra_trend_args):
+        """"""
+
+        return go.Scatter(x=x, y=y, **extra_trend_args, **style.trend_trace_options)
+
+    def get_trend_fig(self, **trend_layout_style):
+        """Get trend lines figure"""
+
+        return figure_widget(**trend_layout_style)
+
+    def get_catch_bar(self):
+        """Returns an stacked bar char of deforested area"""
+
+        # Prepare first view dataframe data (default one)
+        catch_area_df = self.base_df.groupby(["basin"]).sum().reset_index()
+
+        catch_bar_trace = self.get_catch_bar_trace(
+            x=catch_area_df["basin"],
+            y=catch_area_df["area"],
+        )
+
+        stacked_bar_fig = figure_widget(**style.bar_layout)
+        stacked_bar_fig.add_traces(catch_bar_trace)
+
+        return stacked_bar_fig
+
+    def get_catch_pie(self, **pie_layout):
+        """Returns a pie chart with measured variable per catchment"""
+
+        # Create the default pie-chart
+        catch_pie_trace = go.Pie(
+            labels=self.base_df["basin"],
+            values=self.base_df["area"],
+            **style.pie_trace_options,
+        )
+
+        pie_layout.update(title_text="Total area")
+
+        catchment_pie_fig = figure_widget(**pie_layout)
+        catchment_pie_fig.add_traces(catch_pie_trace)
+
+        return catchment_pie_fig
+
+    def add_color(self, df):
+        """Add catchment color palette to a filtered dataframe"""
+
+        return pd.merge(
+            df,
+            self.base_df.groupby(["basin"]).first()[["catch_color"]].reset_index(),
+            on="basin",
+            how="inner",
+        )
+
+    def update_traces(self, _):
+        """Update catchment pie and bar chart based on variable/catchment selected"""
+
+        # Index model variables with short name
+        base_df = self.base_df
+        selected_var = self.model.selected_var
+        hybas_id = self.model.selected_hybasid_chart
+        from_, to = self.model.sett_timespan
+
+        base_df = base_df[base_df.basin.isin(hybas_id)]
+
+        if not selected_var:
+            return
+
+        if selected_var == "all":
+
+            self.trend_card.hide()
+
+            base_df = self.add_color(base_df.groupby(["basin"]).sum().reset_index())
+
+            # Filter by hybas_id with all the variables
+            labels = base_df["basin"]
+            values = base_df["area"]
+            colors = base_df["catch_color"]
+
+            self.catchment_bar_fig.update_traces(
+                x=labels, y=values, marker_color=colors
+            )
+        elif selected_var == "loss":
+
+            self.trend_card.show()
+
+            df = base_df.query(f"year>={from_}&year<={to}")
+
+            df_for_pie = self.add_color(
+                df[df.group == "loss"].groupby(["basin", "group"]).sum().reset_index()
+            )
+
+            labels, values, colors = (
+                df_for_pie["basin"],
+                df_for_pie["area"],
+                df_for_pie["catch_color"],
+            )
+            self.catchment_bar_fig.update_layout(barmode="stack")
+
+            with self.catchment_bar_fig.batch_update() and self.trend_fig.batch_update():
+
+                self.catchment_bar_fig.pop("data")
+                self.trend_fig.pop("data")
+
+                for basin in df.basin.unique().tolist():
+
+                    x = df[df.basin == basin]["year"]
+                    y = df[df.basin == basin]["area"]
+                    name = basin
+                    marker_color = df[df.basin == basin]["catch_color"]
+
+                    self.catchment_bar_fig.add_trace(
+                        self.get_catch_bar_trace(
+                            x=x, y=y, name=name, marker_color=marker_color
+                        )
+                    )
+                    self.trend_fig.add_trace(
+                        self.get_trend_trace(
+                            x=x, y=y, name=name, marker_color=marker_color
+                        )
+                    )
+        else:
+            self.trend_card.hide()
+
+            filtered_df = self.add_color(
+                base_df[base_df.group == selected_var]
+                .groupby(["basin", "group"])
+                .sum()
+                .reset_index()
+            )
+
+            labels, values, colors = (
+                filtered_df["basin"],
+                filtered_df["area"],
+                filtered_df["catch_color"],
+            )
+
+            # Check if there is more than one trace
+            if len(self.catchment_bar_fig.data) > 1:
+
+                with self.catchment_bar_fig.batch_update():
+
+                    self.catchment_bar_fig.pop("data")
+                    self.catchment_bar_fig.add_trace(
+                        self.get_catch_bar_trace(
+                            x=labels, y=values, marker_color=colors
+                        )
+                    )
+            else:
+                self.catchment_bar_fig.update_traces(
+                    x=labels, y=values, marker_color=colors
+                )
+        self.catchment_pie_fig.update_traces(
+            labels=labels, values=values, marker_colors=colors
+        )
+
+        # Update layouts
+        self.catchment_pie_fig.update_layout(title_text=selected_var)
+        self.catchment_bar_fig.update_layout(title_text=selected_var)
+        self.trend_fig.update_layout(title_text=selected_var)
