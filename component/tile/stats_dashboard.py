@@ -13,7 +13,39 @@ import component.parameter as cp
 from component.message import cm
 import component.parameter.fig_styles as styles
 
-__all__ = ["StatSettingCard", "OverallPieCard", "DetailedStat", ]
+__all__ = ["StatSettingCard", "OverallPieCard", "DetailedStat", "StatDashboard"]
+
+
+class StatDashboard(sw.Layout):
+    def __init__(self, model, *args, **kwargs):
+
+        self.model = model
+
+        self.class_ = "pa-4 d-block"
+
+        super().__init__(*args, **kwargs)
+
+        # First row
+        self.stat_setting_card = StatSettingCard(model=self.model)
+        self.overall_pie_card = OverallPieCard(self.model)
+
+        # Second row
+        self.detail_stat_layout = DetailedStat(self.model)
+
+        overall_row = v.Layout(
+            class_="d-flex mb-4",
+            children=[
+                v.Flex(
+                    class_="mr-2",
+                    xs12=True,
+                    sm5=True,
+                    children=[self.stat_setting_card],
+                ),
+                v.Flex(xs12=True, sm7=True, children=[self.overall_pie_card]),
+            ],
+        )
+
+        self.children = [overall_row, self.detail_stat_layout]
 
 
 class StatSettingCard(cw.Card):
