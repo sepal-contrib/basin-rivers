@@ -12,6 +12,32 @@ from component.message import cm
 
 __all__ = ["StatSettingCard", "StatDashboard"]
 
+
+def figure_widget(layout_options={}):
+    """Create a figure widget with a plotyly dark theme"""
+
+    ipyfig = go.FigureWidget()
+    ipyfig.update_layout(
+        template="plotly_dark", 
+        template_layout_paper_bgcolor="#1a1a1a",
+        **layout_options
+    )
+    return ipyfig
+
+def get_pull(grouped_df, target_group, size):
+    """Creates a pull list based on target_group"""
+
+    pull = len(grouped_df.index)*[0]
+
+    # Do not pull
+    if target_group is None:
+        return pull
+
+    pull.insert(target_group, size)
+
+    return pull
+
+
 class StatDashboard(sw.Layout):
     
     def __init__(self, model, *args, **kwargs):
