@@ -10,7 +10,13 @@ import ee
 
 ee.Initialize()
 
-__all__ = ["CoordinatesView", "MetadataTable"]
+__all__ = [
+    "CoordinatesView", 
+    "MetadataTable", 
+    "DateSlider", 
+    "Card", 
+    "CustomDrawerItem"
+]
 
 
 class link(traitlets_link):
@@ -42,7 +48,7 @@ class link(traitlets_link):
             pass
 
 
-class CoordinatesView(v.Layout, sw.SepalWidget):
+class CoordinatesView(sw.Layout):
     """Card to capture, and send coordinates to the map through a marker
 
     Args:
@@ -82,7 +88,7 @@ class CoordinatesView(v.Layout, sw.SepalWidget):
         self.btn_use = v.Btn(
             children=[v.Icon(children=["fas fa-arrow-right"])],
             color="primary",
-            small=True,
+            x_small=True,
             disabled=True,
             block=True,
         )
@@ -121,6 +127,7 @@ class CoordinatesView(v.Layout, sw.SepalWidget):
             self.map_.add_layer(manual_marker)
 
         self.map_.set_center(self.model.lon, self.model.lat)
+        self.model.marker = True
 
     def toggle_coords(self, change):
 
@@ -150,11 +157,6 @@ class MetadataTable(sw.Card):
         # Create table
         super().__init__(*args, **kwargs)
 
-        # self.close = sw.Icon(children=["mdi-close"], small=True)
-        # self.title = sw.CardTitle(class_="pa-0 ma-0", children=[sw.Spacer(), self.close])
-
-        # self.close.on_event("click", lambda *args: self.hide())
-
     def update(self, data):
         """Create metadata Simple Table based on the given data
         Args:
@@ -183,3 +185,79 @@ class MetadataTable(sw.Card):
         """Create an empty table"""
 
         self.children = []
+        
+        
+class DateSlider(sw.RangeSlider):
+    
+    def __init__(self, *args, **kwargs):
+
+        self.label=cm.inputs.year
+        self.class_="mt-5"
+        self.thumb_label="always"
+        self.min=2000 + param.gfc_min_year
+        self.max=2000 + param.gfc_max_year
+        self.v_model = [self.min, self.max]
+        
+        super().__init__(*args, **kwargs)
+
+        
+class Card(sw.Card):
+    
+    def __init__(self, *args, **kwargs):
+        kwargs["outlined"] = True
+        super().__init__(*args, **kwargs)
+        
+class CustomDrawerItem(sw.DrawerItem):
+    
+    def __init__(self, *args, model=None, **kwargs):
+        
+        super().__init__(*args, **kwargs)
+        
+        self.alert = v.ListItemAction(
+            children = [
+                v.Icon(children=["mdi-circle"], x_small=True, color="red")
+            ]
+        )
+
+        model.observe(self.add_notif, "ready")
+    
+    def add_notif(self, change):
+        """Add a notification alert to drawer"""
+        
+        if change["new"]:
+            if not self.alert in self.children:
+                new_children = self.children[:]
+                new_children.append(self.alert)
+                self.children = new_children
+                self.disabled = False
+        else:
+            self.remove_notif()
+        
+    def remove_notif(self):
+        """Remove notification alert"""
+        
+        if self.alert in self.children:
+            new_children = self.children[:]
+            new_children.remove(self.alert)
+
+            self.children = new_children
+        
+        
+    def _on_click(self, widget, event, data, tiles):
+
+        for tile in tiles:
+            if self._metadata["card_id"] == tile._metadata["mount_id"]:
+                tile.show()
+            else:
+                tile.hide()
+
+        # trigger the resize event
+        self.rt.resize()
+
+        # change the current item status
+        self.input_value = True
+        
+        self.remove_notif()
+
+        return self
+    
