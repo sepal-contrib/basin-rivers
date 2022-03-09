@@ -1,0 +1,66 @@
+{
+    "inputs" : {
+        "lat": "latitude",
+        "lon": "longitude",
+        "thres": "Forest threshold",
+        "year": "Range of analysis",
+        "level" : {
+            "label" : "Hydrobasin target level",
+            "item" : "Level {}"
+        }
+    },
+    "basin" : {
+        "basinid" : {
+            "label" : "Hydrobasin id"
+        },
+        "type" : {
+            "label": "Selection method",
+            "all":"Use all catchments (no filter)",
+            "filter":"Filter by id"
+        }
+    },
+    "map": {
+        "trash" : {
+            "trash_point" : "Remove point",
+            "trash_selection" : "Remove selection"
+        }
+    },
+    "gfc": {
+        "loss" : "Loss",
+        "non_forest":"Non forest",
+        "forest" : "Forest",
+        "gain" : "Gain",
+        "gain_loss": "Gain and loss"
+    },
+    "graphs" : {
+        "setting":{
+            "title": "Settings",
+            "w_variable" : {
+                "label" : "Select a variable"
+            }
+        },
+        "overall_pie" : {
+            "title":"Overall ratio"
+        },
+        "detail_pie": {
+            "all": "Watershed area ratio",
+            "forest": "Forest ratio per watershed",
+            "gain": "Gain ratio per watershed",
+            "non_forest": "Non forest ratio per watershed",
+            "gain_loss": "Gain+loss (change) ratio per watershed",
+            "loss": "Loss ratio per watershed"
+        },
+        "bars": {
+            "all": "Total basin area",
+            "forest": "Total forest area",
+            "gain": "Total gain area",
+            "non_forest": "Non forest total area",
+            "gain_loss": "Gain+loss (change) total area",
+            "loss": "Total loss area"
+        },
+        "trend": {
+            "all": "Forest loss trend",
+            "loss": "Forest loss trend"
+        }
+    }
+}
