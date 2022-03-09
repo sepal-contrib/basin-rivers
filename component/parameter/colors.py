@@ -3,7 +3,7 @@ import numpy as np
 
 from .app import year_range, gfc_labels, gfc_classes
 
-__all__ = ["gfc_vis"]
+__all__ = ["gfc_vis", "gfc_colors", "gfc_vis", "gfc_colors_dict"]
 
 
 def color_fader(v=0):
@@ -24,8 +24,11 @@ def color_fader(v=0):
 
 gfc_colors = [colors.to_hex(color_fader(year)) for year in year_range] + [
     colors.to_hex(strcolor)
-    for strcolor in ["lightgrey", "darkgreen", "lightgreen", "purple"]
+    for strcolor in ["lightgrey", "darkgreen", "lightgreen", "purple", "darkred"]
 ]
+
+gfc_colors_dict = dict(zip(gfc_labels, gfc_colors))
+gfc_colors_dict.update({"loss":'darkred'})
 
 gfc_vis = {
     "visualization_0_type": "categorical",
