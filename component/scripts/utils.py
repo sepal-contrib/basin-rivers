@@ -57,3 +57,19 @@ def get_marker(coordinates):
     marker.__setattr__("name", param.marker_name)
 
     return marker
+
+
+
+
+def get_pull(grouped_df, target_group, size):
+    """Creates a pull list based on target_group"""
+
+    pull = len(grouped_df.index)*[0]
+
+    # Do not pull
+    if target_group is None:
+        return pull
+
+    pull.insert(target_group, size)
+
+    return pull
