@@ -1,4 +1,7 @@
+import numpy as np
 import pandas as pd
+import seaborn as sns
+import random
 
 from traitlets import Int, List, Bool, CFloat, Unicode
 
@@ -23,10 +26,13 @@ class BasinModel(Model):
     years = List([2010, 2020]).tag(sync=True)
     thres = Int(80).tag(sync=True)
 
-    level = Int(6).tag(sync=True)
+    level = Int(8).tag(sync=True)
     "int: target level of the catchment"
+    
+    method = Unicode("").tag(sync=True)
+    "Unicode: Selection basin id method (all - filter)" 
 
-    selected_hybas = List(["all"]).tag(sync=True)
+    selected_hybas = List([]).tag(sync=True)
     "list: current selected hybasid(s) from the dropdown base list"
 
     hybasin_list = List().tag(sync=True)
@@ -37,6 +43,19 @@ class BasinModel(Model):
 
     marker = Bool(False).tag(sync=True)
     "bool: whether a marker (AOI) is set or not"
+    
+    # Statistics 
+    ready = Bool(False).tag(sync=True)
+    
+    sett_timespan = List([2010, 2020]).tag(sync=True)
+    "list: user selected span of time in the statistics settings panel"
+    
+    selected_var = Unicode('').tag(sync=True)
+    "str: current selected variable from pie chart or variable selector widget"
+    
+    selected_hybasid_chart = List([]).tag(sync=True)
+    "list: selected hybasid(s) from the statistics dashboard list or from catchments pie"
+    
 
     def __init__(self):
         """
@@ -49,6 +68,7 @@ class BasinModel(Model):
             forest_change (ee.Image): forest change mas within the given upstream
                 catchments at the given livel using the base basin.
             data (dict): upstream catchments in a geojson format
+            zonal_df (df): Zonal statistics dataframe
         """
 
         self.base_basin = None
@@ -59,6 +79,7 @@ class BasinModel(Model):
         self.lon_link = False
 
         self.data = None
+        self.zonal_df = None
 
     def get_upstream_basin_ids(self, geometry, max_steps=100):
         """Return a list with all uperstream catchments ids from the base basin
@@ -192,19 +213,20 @@ class BasinModel(Model):
 
             return list(GeoDataFrame.from_features(dataset["features"]).total_bounds)
 
-    def calculate_statistics(self, hybas_ids=["all"]):
+    def calculate_statistics(self):
         """Get hydrobasin id statistics on the given hybasin_id
 
         hybas_ids (list): hydrobasin id's to calculate statistics.
 
         """
 
-        if not hybas_ids:
+        if self.method=="filter" and not self.selected_hybas:
             raise Exception("Please select a subcatchment.")
 
         feature_collection = self.base_basin.filter(
             ee.Filter.inList(
-                "HYBAS_ID", hybas_ids if hybas_ids != ["all"] else self.hybasin_list
+                "HYBAS_ID", 
+                self.selected_hybas if self.method != "all" else self.hybasin_list
             )
         )
 
@@ -218,7 +240,7 @@ class BasinModel(Model):
                 scale=ee.Image(param.gfc_dataset).projection().nominalScale(),
             )
         ).getInfo()
-
+    
     @staticmethod
     def get_dataframe(result):
         """parse reduce region result as Pandas Dataframe
@@ -237,7 +259,7 @@ class BasinModel(Model):
 
             hybas_stats[hybas_id] = zonal_stats
 
-        return (
+        df = (
             pd.melt(
                 pd.DataFrame.from_dict(hybas_stats, "index")
                 # .rename(columns=param.gfc_names)
@@ -247,3 +269,35 @@ class BasinModel(Model):
             .reset_index()
             .rename(columns={"index": "basin", "value": "area"})
         )
+        
+        # Prepare base dataframe
+        df["basin"] = df.basin.astype(str)
+        df["variable"] = df.variable.astype(int)
+        df["group"] = df["variable"].apply(lambda x: cp.gfc_translation[x])
+
+        # Create a year label and set 0 to everything is not forest-loss
+        df["year"] = df["variable"].apply(lambda x: x+2000 if x<=20 else 0).astype(int)
+
+        # Add a color for every catchment
+        color_palette = np.array(
+            sns.color_palette("hls", len(df.basin.unique())).as_hex()
+        )
+        
+        random.shuffle(color_palette)
+
+        df['catch_color'] = color_palette[pd.factorize(df.basin)[0]]
+        
+        return df
+
+    def get_overall_pie_df(self,):
+        """Create a grouped dataframe to display overall pie statistics"""
+
+        grouped_df = self.zonal_df.groupby(["group"]).sum().reset_index()
+        grouped_df["color"] = grouped_df["group"].apply(lambda x: param.gfc_colors_dict[x])
+        
+        return grouped_df
+    
+    def get_bar_df(self):
+        
+        catch_area_df = self.base_df.groupby(["basin"]).sum().reset_index()
+        
