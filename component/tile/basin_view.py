@@ -12,39 +12,16 @@ import sepal_ui.sepalwidgets as sw
 import sepal_ui.scripts.utils as su
 
 
+import component.widget as cw
 import component.parameter as param
 from component.message import cm
 
 
-__all__ = ["BasinView", "Dashboard"]
+
+__all__ = ["BasinView"]
 
 
-class Dashboard(v.Card, sw.SepalWidget):
-    def __init__(self, *args, **kwargs):
-
-        self.class_ = "d-block pa-2 mt-4"
-
-        super().__init__(*args, **kwargs)
-
-        title = v.CardTitle(children=["Statistics"])
-        # desc = v.CardText(children=['Statistics'])
-        self.alert = sw.Alert()
-
-        self.btn_csv = sw.Btn("Download .csv file", class_="mr-2 mb-2").hide()
-        self.btn_pdf = sw.Btn("Download .pdf report", class_="mb-2").hide()
-
-        self.output = Output()
-
-        self.children = [
-            title,
-            # desc,
-            self.btn_csv,
-            self.btn_pdf,
-            self.output,
-        ]
-
-
-class BasinView(v.Card, sw.SepalWidget):
+class BasinView(cw.Card):
     """Card to capture all the user inputs
 
     Args:
@@ -52,7 +29,7 @@ class BasinView(v.Card, sw.SepalWidget):
         map_ (SepalMap): Map to display the output layers
     """
 
-    def __init__(self, model, map_, dashboard, *args, **kwargs):
+    def __init__(self, model, map_, *args, **kwargs):
 
         self.class_ = "d-block pa-2 mt-4"
 
@@ -65,9 +42,7 @@ class BasinView(v.Card, sw.SepalWidget):
         desc = v.CardText()
 
         self.alert = sw.Alert()
-
-        self.dashboard = dashboard
-
+        
         self.w_type = sw.Select(
             label=cm.basin.type.label,
             items=[
@@ -80,12 +55,12 @@ class BasinView(v.Card, sw.SepalWidget):
         self.w_hybasid = sw.Select(
             label=cm.basin.basinid.label,
             items=[],
-            v_model=self.model.selected_hybas,
+            v_model=[],
             multiple=True,
             chips=True,
         ).hide()
 
-        self.btn = sw.Btn("Calculate statistics")
+        self.btn = sw.Btn("Calculate statistics", small=True,)
 
         self.children = [title, desc, self.w_type, self.w_hybasid, self.btn, self.alert]
 
@@ -95,6 +70,7 @@ class BasinView(v.Card, sw.SepalWidget):
         self.w_type.observe(self.display_filter, "v_model")
 
         link((self.w_hybasid, "v_model"), (self.model, "selected_hybas"))
+        link((self.w_type, "v_model"),(self.model, "method"))
 
         self.btn.on_event("click", self.calculate_statistics)
 
@@ -113,59 +89,17 @@ class BasinView(v.Card, sw.SepalWidget):
     @su.loading_button(debug=True)
     def calculate_statistics(self, widget, event, data):
         """Calculate zonal statistics based on the selected hybas_id"""
+        
+        self.model.ready = False
 
-        hybas_id = self.w_hybasid.v_model
+        zonal_statistics = self.model.calculate_statistics()
+        
+        self.model.zonal_df = self.model.get_dataframe(zonal_statistics)
+        
+        # Graphs dashboard is listening this trait to load its data
+        self.model.ready = True
+        
 
-        zonal_statistics = self.model.calculate_statistics(hybas_id)
-
-        df = self.model.get_dataframe(zonal_statistics)
-        df = df.sort_values(by=["basin", "variable"])
-        self.df = df[df["variable"] < 30]
-
-        self.dashboard.btn_pdf.show()
-        self.dashboard.btn_csv.show()
-
-        with self.dashboard.output:
-
-            self.dashboard.output.clear_output()
-
-            agg_tips = (
-                self.df.groupby(["basin", "variable"])["area"]
-                .sum()
-                .unstack()
-                .fillna(0)
-                .T
-            )
-
-            import seaborn as sns
-
-            sns.set_theme(style="darkgrid")
-            sns.set(rc={"figure.figsize": (20, 8.27)})
-
-            import numpy as np
-            from matplotlib import pyplot as plt
-
-            fig, ax = plt.subplots()
-
-            # Initialize the bottom at zero for the first set of bars.
-            bottom = np.zeros(len(agg_tips))
-
-            # Plot each layer of the bar, adding each bar to the "bottom" so
-            # the next bar starts higher.
-            for i, col in enumerate(agg_tips.columns):
-                ax.bar(
-                    [f"{i + 2000}" for i in self.df["variable"].unique()],
-                    agg_tips[col],
-                    bottom=bottom,
-                    label=col,
-                )
-                bottom += np.array(agg_tips[col])
-
-            ax.set_title("Deforested area")
-            ax.legend()
-
-            self.fig = fig
-            display(fig)
 
     def fill_catchs(self, change):
         """Fill the selection widget list with the gathered"""
@@ -196,3 +130,5 @@ class BasinView(v.Card, sw.SepalWidget):
 
             self.map_.zoom_bounds(bounds)
             self.map_.add_layer(selected)
+
+            

@@ -1,9 +1,9 @@
 from traitlets import CFloat, dlink, Bool
 from ipyleaflet import LocalTileLayer, WidgetControl
-
-import sepal_ui.sepalwidgets as sw
-from sepal_ui.mapping import SepalMap
 import ipyvuetify as v
+
+from sepal_ui.mapping import SepalMap
+import sepal_ui.sepalwidgets as sw
 
 import component.widget as cw
 import component.scripts.utils as cu
