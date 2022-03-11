@@ -8,7 +8,8 @@ from component.message import cm
 import component.widget as cw
 import component.parameter as cp
 
-import component
+
+from sepal_ui.frontend import js
 
 __all__=["StatSettingCard"]
 
@@ -19,6 +20,11 @@ class StatSettingCard(cw.Card):
     
     def __init__(self, model, *args, **kwargs):
         super().__init__(*args, **kwargs)
+        
+        
+        # set the resizetrigger
+        self.rt = js.rt
+        
         
         self.model = model
 
@@ -120,6 +126,8 @@ class StatSettingCard(cw.Card):
 
     def show_years(self, change):
         """Hide years selection widget when loss is selected"""
+        
+        self.rt.resize()
 
         if change["new"] == "loss":
             self.w_years.show()
