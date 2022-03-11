@@ -31,6 +31,7 @@ class MapTile(SepalMap):
 
         self.zoom = 10
         self.center = [self.lat, self.lon]
+        self.layout.height="85vh"
 
         self.trash_btn = TrashMenu()
 
