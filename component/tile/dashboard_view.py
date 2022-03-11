@@ -352,10 +352,9 @@ class DetailedStat(sw.Layout):
             title_text=eval(f"cm.graphs.detail_pie.{selected_var}")
         )
         self.catchment_bar_fig.update_layout(
-            title_text=eval(f"cm.graphs.bars.{selected_var}")
-        )
-        self.trend_fig.update_layout(
-            title_text=eval(f"cm.graphs.trend.{selected_var}")
-        )
-        
+            title_text=eval(f"cm.graphs.bars.{selected_var}"),
+            xaxis_title=eval(
+                f"cm.graphs.bars.xaxis_{'year' if selected_var =='loss' else 'catch'}"
+            ),
+        )        
         
