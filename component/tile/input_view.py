@@ -14,6 +14,7 @@ from geopandas import GeoDataFrame
 from geemap import ee_to_geojson
 
 
+
 import ee
 
 ee.Initialize()
@@ -106,7 +107,7 @@ class InputsView(cw.Card):
             data=self.model.data,
             name="Upstream catchment",
             style={"fillOpacity": 0.1, "weight": 2},
-            hover_style={"color": "white", "dashArray": "0", "fillOpacity": 0.5},
+            hover_style=param.hover_style,
         )
 
         def update_info(feature, **kargs):

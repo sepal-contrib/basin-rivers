@@ -30,17 +30,14 @@ hybas_dataset = "WWF/HydroSHEDS/v1/Basins/hybas_{}"
 hybas_levels = list(range(5, 13))
 
 # Create a visualization parameters to the selected element
-selected_vis = {"palette": "red"}
-basinbound_vis = {"palette": "black"}
+selected_style = {"fillOpacity": 0.1, "weight": 2, "color": "black"}
+hover_style = {"color": "white", "dashArray": "0", "fillOpacity": 0, "weight": 3}
 
 # Create a name to the marker point in the map
-
 marker_name = "Marker"
-
 
 # Catchment properties to display
 display_prop = ["HYBAS_ID"]
-
 
 # Define a maximum number of catchments to display on the detailed graphs
 MAX_CATCH_NUMBER = 10
