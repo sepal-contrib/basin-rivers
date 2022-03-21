@@ -3,7 +3,7 @@ import numpy as np
 
 from .app import year_range, gfc_labels, gfc_classes
 
-__all__ = ["gfc_vis", "gfc_colors", "gfc_vis", "gfc_colors_dict"]
+__all__ = ["gfc_vis", "gfc_colors", "gfc_vis", "gfc_colors_dict", "LEGEND"]
 
 
 def color_fader(v=0):
@@ -38,3 +38,8 @@ gfc_vis = {
     "visualization_0_labels": gfc_labels,
     "visualization_0_values": gfc_classes,
 }
+
+
+LEGEND = {" ".join(k.split("_")).capitalize():v for k,v in gfc_colors_dict.items()}
+LEGEND.pop('Loss 2000')
+LEGEND.pop('Loss')

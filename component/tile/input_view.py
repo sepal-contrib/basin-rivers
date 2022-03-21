@@ -1,4 +1,5 @@
 from traitlets import Bool, link
+from ipywidgets import Layout
 from ipyleaflet import GeoJSON
 import ipyvuetify as v
 
@@ -119,6 +120,11 @@ class InputsView(cw.Card):
         forest_change = self.model.get_gfc(upstream_catch.geometry()).set(param.gfc_vis)
 
         # Get bounds and zoom to the object
+        
+        self.map_.add_legend(legend_title="Legend", legend_dict=param.LEGEND)
+        # Do this trick to remove the scrolling bar in the legend output
+        self.map_.legend_widget.layout = Layout(width="95px", overflow="none")
+        
         self.map_.zoom_bounds(self.model.get_bounds(self.model.data))
         self.map_.addLayer(forest_change, {}, "Forest change")
         self.map_.add_layer(upstream_catch_gj)

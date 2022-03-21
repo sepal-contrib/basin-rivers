@@ -17,6 +17,12 @@ gfc_labels = [f"loss_{y+2000}" for y in year_range] + [
     "gain_loss",
 ]
 
+gfc_str_code = []
+
+GFC = {
+    
+}
+
 
 # Create a group for each category and a translation dictionary
 gfc_groups = ["loss"]*(gfc_max_year+1) + gfc_labels[gfc_max_year+1:]
