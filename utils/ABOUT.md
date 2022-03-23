@@ -1,24 +1,13 @@
-## a first section 
+# Resilient rivers and basins
 
-Lorem ipsum dolor sit amet, consectetur adipiscing elit. Fusce placerat cursus felis et vestibulum. Donec quis ultrices ligula. Integer **dolor nunc**, molestie quis sem sit amet, volutpat vulputate lorem. Nullam ut ante nibh. Nulla pulvinar vel diam id efficitur. In a ligula viverra, aliquet nulla sed, accumsan metus. Sed vel magna et turpis sodales placerat eu at lectus. Aenean commodo ligula turpis, ut maximus libero pretium vitae. Nam ipsum nulla, hendrerit a arcu non, ornare pretium leo. Morbi ut lacus sed leo suscipit malesuada. Donec varius mi auctor diam condimentum egestas.  
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
-Integer blandit vitae ex sed facilisis. *Curabitur in eros commodo sem auctor maximus ac ac massa.* Ut fermentum consectetur massa, nec egestas sapien. Mauris cursus sem et eros auctor, et eleifend dui euismod. Vivamus lacinia porta augue, in luctus neque venenatis vitae. Nullam placerat efficitur turpis, eget bibendum sem imperdiet ut. Mauris viverra nibh sed aliquam egestas. Vestibulum vitae nibh id mi volutpat cursus eu eu lectus. Ut a augue nisi.  
 
-you can add code : 
-```py
-#some code 
-class foo:
-    def __init__():
-        self.toto = 10
-```
+Starting from a point on the map, the module will use the, Global watershed boundaries and sub-basin delineations dataset, derived from [HydroSHEDS](https://www.hydrosheds.org/page/hydrobasins) data at fifteen second resolution, to obtain all the sub-basins that drain towards the selected point at the given detail level.
 
-and lists :  
-  
-- itemList     
-- itemList      
-- itemList       
+![inputs](https://raw.githubusercontent.com/sepal-contrib/basin-rivers/master/doc/img/inputs.gif)
 
-even links like [sepal](https://github.com/openforis/)
 
-## a second section 
+The module will generate a dashboard with zonal statistics using the [Global Forest Change dataset v1.8](https://developers.google.com/earth-engine/datasets/catalog/UMD_hansen_global_forest_change_2020_v1_8) published by Hansen et al., where we can find zones of change (forests and non-forests) and zones of no change (gain and loss).
 
+![dashboard](https://raw.githubusercontent.com/sepal-contrib/basin-rivers/master/doc/img/dashboard.gif)
