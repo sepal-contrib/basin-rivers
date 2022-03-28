@@ -16,4 +16,4 @@ plotly==5.6.0
 
 ipyleaflet<=0.13.3 
 click<8,>=4.0 
-ipywidgets==7.6.5 # cannot use newer version there are not compatible with voila 3.1.0
+ipywidgets==7.6.5
