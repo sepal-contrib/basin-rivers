@@ -87,9 +87,4 @@ The detailed graphs display interactively both, the ratio and the total area of 
 .. note:: 
     Remember that only the forest loss variable is temporal related. Meaning that a new graph will be shown up at the bottom of the screen, this graph represents the trend of the variable for the selected period.
     
-    
-.. thumbnail:: https://raw.githubusercontent.com/sepal-contrib/basin-rivers/master/doc/img/interactive_stats.gif
-    :width: 90%
-    :title: Interactive stats
-    :group: dashboard
-
+.. image:: https://raw.githubusercontent.com/sepal-contrib/basin-rivers/master/doc/img/interactive_stats.gif
