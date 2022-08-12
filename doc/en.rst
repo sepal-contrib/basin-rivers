@@ -78,7 +78,7 @@ In the settings card, you can choose from several variables to display: all, gai
 The overall ratio is an interactive pie chart that displays the proportion of the output variables. This graph also allows you to directly select the variable to be used in the detailed charts, click over any of the variables and the slice will come out.
 
 .. thumbnail:: https://raw.githubusercontent.com/sepal-contrib/basin-rivers/master/doc/img/overal_pie_ratio.png
-    :width: 80%
+    :width: 55%
     :title: Overall pie ratio
     :group: dashboard
 
