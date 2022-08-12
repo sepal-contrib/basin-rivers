@@ -66,7 +66,7 @@ The dashboard panel is divided into three main sections, the top-left settings c
 
 
 .. tip::
-    All the graphs have the option to be downloaded independently and directly to your browser, just hover the cursor in the top right corner and click on the :icon'`fas fa-camera` icon.
+    All the graphs have the option to be downloaded independently and directly to your browser, just hover the cursor in the top right corner and click on the :icon:`fas fa-camera` icon.
     
 In the settings card, you can choose from several variables to display: all, gain and loss, loss, non-forest, forest, and gain, by selecting one of these options all the other graphs will display the statistics accordingly to the selection. From this menu you can also filter the data by one or more sub-catchments, allowing also the chance to generate comparisons between the different areas in a dynamic way.
 
