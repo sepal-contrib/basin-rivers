@@ -3,8 +3,7 @@ Resilient rivers and basins
 
 Overview
 ________
-
-The Resilient rivers and basins beta app is a tool that will allow you to get zonal statistics about the forest and forest change over a wide range of years divided by the upstream catchments that are draining to a given point. All of these processes can be done directly into your SEPAL instance without the need of any other source. To run this module we recommend initializing at least a machine with 4GB RAM (an t2 or m2 instance), to more detailed instructions, please refer to `this documentation <https://docs.sepal.io/en/latest/modules/index.html#start-instance-manually>`_.
+The Resilient rivers and basins beta app is a tool that describes forest cover and forest cover change from a watershed perspective by calculating statistics across sub-watersheds and over time. Watersheds of interest will be defined by the upstream catchment draining to any given point. All of these processes can be done directly into your SEPAL instance without the need of any other source. To run this module we recommend initializing at least a machine with 4GB RAM (an t2 or m2 instance), to more detailed instructions, please refer to `this documentation <https://docs.sepal.io/en/latest/modules/index.html#start-instance-manually>`_.
 
 Inputs
 ______
