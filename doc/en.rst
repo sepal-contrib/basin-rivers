@@ -15,7 +15,6 @@ Once you have started an instance an instance, `search in the apps tab <https:
 By default, the input drawer will be active. The input drawer is divided into two main panels. On the left, you can find all the input parameters to derive statistics. On the right, you have the map view where calculated layers will be loaded. 
 
 .. thumbnail:: https://raw.githubusercontent.com/sepal-contrib/basin-rivers/master/doc/img/inputs.png 
-
     :width: 80% 
     :title: Inputs view 
     :group: inputs 
@@ -26,7 +25,6 @@ The first input needed is a coordinate pair.  These coordinates will be used to 
  
 
 .. thumbnail:: https://raw.githubusercontent.com/sepal-contrib/basin-rivers/master/doc/img/coordinates.png 
-
     :width: 55% 
     :title: Inputs view 
     :group: inputs 
@@ -41,7 +39,6 @@ The next step is to select the HydroBASIN target level by using the dropdown lis
 The forest cover change map is based on the `Hansen et al., 2013 Global Forest Change product <https://www.science.org/doi/10.1126/science.1244693>`_ retrieved `Google Earth Engine <https://developers.google.com/earth-engine/datasets/catalog/UMD_hansen_global_forest_change_2021_v1_9>`_. This product was created to show forest cover change at a global scale based on Landsat imagery. This product has forest change data from the year 2001 to the year 2000 as the baseline. The resilient rivers and basins app will crop and summarize forest cover statistics for each of the forest cover classes at the selected basin scale (HydroBASIN level). To begin, select the start and end year using the sliders. Next, select the forest threshold. Forest threshold determines the level of tree cover required for a pixel in the Hansen product to be classified as forest. Constraining or unbridling the value will have alter the amount of forest cover or forest cover change observed. 
 
 .. thumbnail:: https://raw.githubusercontent.com/sepal-contrib/basin-rivers/master/doc/img/levels.png 
-
     :width: 55% 
     :title: Settings levels 
     :group: inputs 
@@ -54,7 +51,6 @@ Click the :btn:`get upstream basins` button to run the process. After a few 
 To start a new process, you can use the top left trash bin button in the map to remove the downstream point or to remove the sub-basins selection (see the next section, how to constrain the analysis to a given set of sub-basins). 
 
 .. thumbnail:: https://raw.githubusercontent.com/sepal-contrib/basin-rivers/master/doc/img/trash_bin.png 
-
     :width: 30% 
     :title: Trash bin 
     :group: inputs 
@@ -65,7 +61,6 @@ To calculate and display statistical results in the results dashboard, use the s
 Once the dashboard is calculated, a red dot will be displayed in the results drawer, as in the below image: 
 
 .. thumbnail:: https://raw.githubusercontent.com/sepal-contrib/basin-rivers/master/doc/img/results_done.png 
-
     :width: 30% 
     :title: Done drawer 
     :group: inputs 
@@ -83,7 +78,6 @@ The dashboard panel is divided into three main sections:, the top-left settings 
 In the settings tile, you can choose the variable to display: all, gain and loss, loss, non-forest, forest, and gain. By choosing one of these options, all graphs will display the selected statistics. From this menu you can also filter the data by one or more sub-basins, allowing also the possibility to generate dynamic comparisons between areas. 
 
 .. thumbnail:: https://raw.githubusercontent.com/sepal-contrib/basin-rivers/master/doc/img/stats_card.png 
-
     :width: 73% 
     :title: Statistics card 
     :group: dashboard 
@@ -92,7 +86,6 @@ In the settings tile, you can choose the variable to display: all, gain and loss
 The overall ratio is an interactive pie chart that displays the output variable by proportion of each sub-category. This pie chart also allows you to directly select one sub-category to be used in the detailed charts. Simply click any sub-category and the corresponding slice will pop out. 
 
 .. thumbnail:: https://raw.githubusercontent.com/sepal-contrib/basin-rivers/master/doc/img/overal_pie_ratio.png 
-
     :width: 55% 
     :title: Overall pie ratio 
     :group: dashboard 
