@@ -17,15 +17,15 @@ Once you have started an instance, `search in the apps tab <https://docs.sepal
 
 This module is composed of two main sections: 
 
-    1. **the left pane**, which displays all of the processes (i.e. inputs and results) at the top and some helpful links (e.g. bug report, wiki, source code) at the bottom; and 
+1.  **the left pane**, which displays all of the processes (i.e. inputs and results) at the top and some helpful links (e.g. bug report, wiki, source code) at the bottom; and 
 
-    2. **the right pane**, which displays the process and inputs. 
+2.  **the right pane**, which displays the process and inputs. 
 
 By default, the **input drawer** will be active. It is divided into two main panes:
 
-    1. **the left pane**, which displays all of the input parameters to derive statistics. 
+1.  **the left pane**, which displays all of the input parameters to derive statistics. 
     
-    2. **the right pane**, which displays the map view where calculated layers will be loaded. 
+2.  **the right pane**, which displays the map view where calculated layers will be loaded. 
 
 .. thumbnail:: https://raw.githubusercontent.com/sepal-contrib/basin-rivers/master/doc/img/inputs.png 
     :width: 80% 
@@ -80,8 +80,8 @@ To start a new process, you can use the **trash bin** button in the upper-left o
 
 To calculate and display statistical results in the **Results** dashboard, use the **Statistics** tile. There are two selection methods: 
 
-    1. **no filter** (i.e. use all basins); 
-    2. **filter**. 
+1.  **no filter** (i.e. use all basins); 
+2.  **filter**. 
     
 When using the **Filter** option, a new dropdown menu will appear at the bottom of the tile with all of the sub-basin IDs. 
 
@@ -111,12 +111,12 @@ The **Dashboard** panel is divided into three main sections:
 
 In the **Settings** tile, you can choose the variable to display: 
 
-    -**all**, 
-    -**gain and loss**, 
-    -**loss**, 
-    -**non-forest**, 
-    -**forest**, and 
-    -**gain**. 
+-   **all**, 
+-   **gain and loss**, 
+-   **loss**, 
+-   **non-forest**, 
+-   **forest**, and 
+-   **gain**. 
 
 By choosing one of these options, all graphs will display the selected statistics. From this menu, you can also filter the data by one or more sub-basins, allowing the possibility of generating dynamic comparisons between areas. 
 
