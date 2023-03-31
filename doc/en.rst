@@ -8,7 +8,7 @@ Overview
 ________
 The **Resilient rivers and basins** beta app is a tool that describes forest cover and forest cover change from a watershed perspective by calculating statistics across subwatersheds over time; watersheds of interest will be defined by the upstream basin draining to any given point. These processes can be conducted directly in your SEPAL instance without requiring additional resources. 
 
-To run this module, we recommend initializing a machine with at least 4 GB RAM (a T2 or M2 instance). For more detailed instructions, see `Start instance manually <https://docs.sepal.io/en/latest/modules/index.html#start-instance-manually>`.
+To run this module, we recommend initializing a machine with at least 4 GB RAM (a t2 or m2 instance). For more detailed instructions, see `Start instance manually <https://docs.sepal.io/en/latest/modules/index.html#start-instance-manually>`.
 
 Inputs
 ______
