@@ -8,18 +8,16 @@ Overview
 ________
 The **Resilient rivers and basins** beta app is a tool that describes forest cover and forest cover change from a watershed perspective by calculating statistics across subwatersheds over time; watersheds of interest will be defined by the upstream basin draining to any given point. These processes can be conducted directly in your SEPAL instance without requiring additional resources. 
 
-To run this module, we recommend initializing a machine with at least 4 GB RAM (a t2 or m2 instance). For more detailed instructions, see `Start instance manually <https://docs.sepal.io/en/latest/modules/index.html#start-instance-manually>`.
+To run this module, we recommend initializing a machine with at least 4 GB RAM (a t2 or m2 instance). For more detailed instructions,  see `Start instance manually <https://docs.sepal.io/en/latest/modules/index.html#start-instance-manually>`__.
 
 Inputs
 ______
 
-Once you have started an instance, `search in the apps tab <https://docs.sepal.io/en/latest/modules/index.html#start-applications>`_ for the **Resilient rivers and basins** app.  
+Once you have started an instance,  `search in the apps tab <https://docs.sepal.io/en/latest/modules/index.html#start-applications>`_ for the **Resilient rivers and basins** app, which is composed of two main sections: 
 
-This module is composed of two main sections: 
+1.  **the left pane**, which displays all of the processes (i.e. inputs and results) at the top, and some helpful links (e.g. bug report, wiki, source code) at the bottom; and 
 
-1.  **the left pane**, which displays all of the processes (i.e. inputs and results) at the top and some helpful links (e.g. bug report, wiki, source code) at the bottom; and 
-
-2.  **the right pane**, which displays the process and inputs. 
+2.  **the right pane**, which displays process and inputs. 
 
 By default, the **input drawer** will be active. It is divided into two main panes:
 
@@ -51,7 +49,7 @@ To use **automatic selection**, turn off the manual switch and navigate through 
 
 The next step is to select the **HydroBASIN target level** by using the dropdown list. **HydroBASINs** are delineated basins in the HydroATLAS database. Their levels range from 5 to 12, where higher numbers indicate smaller basins nested inside larger sub-basins. For more information about how these data are obtained, see `HydroSHEDS documentation <https://www.hydrosheds.org/products/hydrobasins>`_.
 
-The forest cover change map is based on the `Global Forest Change product <https://www.science.org/doi/10.1126/science.1244693>`_ (Hansen *et al.*, 2013), retrieved from `Google Earth Engine <https://developers.google.com/earth-engine/datasets/catalog/UMD_hansen_global_forest_change_2021_v1_9>`_. Created to show forest cover change on a global-scale based on Landsat imagery, the product has forest change data from 2000 to 2001. 
+The forest cover change map is based on the  `Global Forest Change product <https://www.science.org/doi/10.1126/science.1244693>`_ (Hansen *et al.*, 2013), retrieved from `Google Earth Engine <https://developers.google.com/earth-engine/datasets/catalog/UMD_hansen_global_forest_change_2021_v1_9>`_. Created to show forest cover change on a global-scale based on Landsat imagery, the product has forest change data from 2000 to 2001. 
 
 The **Resilient rivers and basins** app will crop and summarize forest cover statistics for each of the forest cover classes at the selected basin scale (i.e. the HydroBASIN level).
 
@@ -107,7 +105,7 @@ The **Dashboard** panel is divided into three main sections:
 
 .. tip::
 
-    All graphs have an option for independent download directly to your browser. Simply hover the cursor in the upper-right corner and select the :icon:`fa-solid fa-camera` icon.
+    All graphs have an option for independent download directly to your browser. Simply hover the cursor in the upper-right corner and select the  :icon:`fa-solid fa-camera`  icon.
 
 In the **Settings** tile, you can choose the variable to display: 
 
