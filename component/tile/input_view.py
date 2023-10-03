@@ -11,10 +11,6 @@ import component.parameter as param
 import component.widget as cw
 from component.message import cm
 
-from geopandas import GeoDataFrame
-from geemap import ee_to_geojson
-
-
 
 import ee
 
@@ -101,7 +97,7 @@ class InputsView(cw.Card):
 
         upstream_catch = self.model.get_upstream_fc()
 
-        self.model.data = ee_to_geojson(upstream_catch)
+        self.model.data = upstream_catch.getInfo()
 
         # Create GeoJSON ipyleaflet object
         upstream_catch_gj = GeoJSON(
@@ -120,11 +116,9 @@ class InputsView(cw.Card):
         forest_change = self.model.get_gfc(upstream_catch.geometry()).set(param.gfc_vis)
 
         # Get bounds and zoom to the object
-        
-        self.map_.add_legend(legend_title="Legend", legend_dict=param.LEGEND)
-        # Do this trick to remove the scrolling bar in the legend output
-        self.map_.legend_widget.layout = Layout(width="95px", overflow="none")
-        
+        if not hasattr(self.map_, "legend"):
+            self.map_.add_legend(title="Legend", legend_dict=param.LEGEND)
+
         self.map_.zoom_bounds(self.model.get_bounds(self.model.data))
         self.map_.addLayer(forest_change, {}, "Forest change")
         self.map_.add_layer(upstream_catch_gj)

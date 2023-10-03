@@ -9,7 +9,7 @@ import component.widget as cw
 import component.parameter as cp
 
 
-from sepal_ui.frontend import js
+from sepal_ui.frontend.resize_trigger import rt
 
 __all__=["StatSettingCard"]
 
@@ -20,12 +20,7 @@ class StatSettingCard(cw.Card):
     
     def __init__(self, model, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        
-        
-        # set the resizetrigger
-        self.rt = js.rt
-        
-        
+
         self.model = model
 
         title = v.CardTitle(children=[cm.graphs.setting.title])
@@ -55,6 +50,7 @@ class StatSettingCard(cw.Card):
             self.w_variable,
             self.w_hybasid,
             self.w_years,
+            rt,
         ]
 
         # Links
@@ -126,8 +122,8 @@ class StatSettingCard(cw.Card):
 
     def show_years(self, change):
         """Hide years selection widget when loss is selected"""
-        
-        self.rt.resize()
+
+        rt.resize()
 
         if change["new"] == "loss":
             self.w_years.show()
