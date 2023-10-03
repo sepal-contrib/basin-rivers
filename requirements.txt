@@ -1,19 +1,11 @@
-# these libs are requested to build common python libs 
-# if you are an advance user and are sure to not use them you can comment the following lines
-wheel
-Cython
-pybind11
-pre-commit
-
-git+https://github.com/openforis/earthengine-api.git@v0.1.270#egg=earthengine-api&subdirectory=python
-
-# the base lib to run any sepal_ui based app 
-# don't forget to fix it to a specific version when you're app is ready
-sepal_ui==2.7.0
-seaborn==0.11.2
-plotly==5.6.0
+# default packages to run the app
+jupyter
+voila
+earthengine-api
 
 
-ipyleaflet<=0.13.3 
-click<8,>=4.0 
-ipywidgets==7.6.5
+# This version contains file input improements and a fix for the map resize
+git+https://github.com/12rambau/sepal_ui.git@cd7d97cd5b2c05fdbbef651e5dd99c19bb71ad65
+
+seaborn
+plotly
