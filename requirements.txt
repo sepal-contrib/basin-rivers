@@ -1,11 +1,10 @@
 # default packages to run the app
-jupyter
 voila
 earthengine-api
 
 
 # This version contains file input improements and a fix for the map resize
-git+https://github.com/12rambau/sepal_ui.git@cd7d97cd5b2c05fdbbef651e5dd99c19bb71ad65
+git+https://github.com/12rambau/sepal_ui.git@sepal_pre_release
 
 seaborn
 plotly
