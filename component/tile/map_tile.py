@@ -53,13 +53,13 @@ class MapTile(SepalMap):
         self.trash_btn.on_event("trash_point", self.trash_event)
         self.trash_btn.on_event("trash_selection", self.trash_event)
 
-    def add_layer(self, layer):
+    def add_layer(self, layer, *args, **kwargs):
         """Add layer and check its name"""
 
         if layer.name == param.marker_name:
             self.trash_btn.show()
 
-        super().add_layer(layer)
+        super().add_layer(layer, *args, **kwargs)
 
     def trash_event(self, widget, event, data):
         """restore coordinates and link lat-lon widgets"""

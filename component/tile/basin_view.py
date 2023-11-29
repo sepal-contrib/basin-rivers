@@ -17,7 +17,6 @@ import component.parameter as param
 from component.message import cm
 
 
-
 __all__ = ["BasinView"]
 
 
@@ -30,7 +29,6 @@ class BasinView(cw.Card):
     """
 
     def __init__(self, model, map_, *args, **kwargs):
-
         self.class_ = "d-block pa-2 mt-4"
 
         super().__init__(*args, **kwargs)
@@ -42,7 +40,7 @@ class BasinView(cw.Card):
         desc = v.CardText()
 
         self.alert = sw.Alert()
-        
+
         self.w_type = sw.Select(
             label=cm.basin.type.label,
             items=[
@@ -60,7 +58,10 @@ class BasinView(cw.Card):
             chips=True,
         ).hide()
 
-        self.btn = sw.Btn("Calculate statistics", small=True,)
+        self.btn = sw.Btn(
+            "Calculate statistics",
+            small=True,
+        )
 
         self.children = [title, desc, self.w_type, self.w_hybasid, self.btn, self.alert]
 
@@ -70,7 +71,7 @@ class BasinView(cw.Card):
         self.w_type.observe(self.display_filter, "v_model")
 
         link((self.w_hybasid, "v_model"), (self.model, "selected_hybas"))
-        link((self.w_type, "v_model"),(self.model, "method"))
+        link((self.w_type, "v_model"), (self.model, "method"))
 
         self.btn.on_event("click", self.calculate_statistics)
 
@@ -86,20 +87,18 @@ class BasinView(cw.Card):
             if self.model.data:
                 self.map_.zoom_bounds(self.model.get_bounds(self.model.data))
 
-    @su.loading_button(debug=True)
+    @su.loading_button()
     def calculate_statistics(self, widget, event, data):
         """Calculate zonal statistics based on the selected hybas_id"""
-        
+
         self.model.ready = False
 
         zonal_statistics = self.model.calculate_statistics()
-        
+
         self.model.zonal_df = self.model.get_dataframe(zonal_statistics)
-        
+
         # Graphs dashboard is listening this trait to load its data
         self.model.ready = True
-        
-
 
     def fill_catchs(self, change):
         """Fill the selection widget list with the gathered"""
@@ -117,7 +116,6 @@ class BasinView(cw.Card):
             return
 
         else:
-
             # Get bounds and zoom to the object
             selected = self.model.get_selected(change["new"], from_json=True)
             bounds = self.model.get_bounds(selected)
@@ -130,5 +128,3 @@ class BasinView(cw.Card):
 
             self.map_.zoom_bounds(bounds)
             self.map_.add_layer(selected)
-
-            

@@ -5,6 +5,7 @@ import ipyvuetify as v
 
 import sepal_ui.sepalwidgets as sw
 import sepal_ui.scripts.utils as su
+from sepal_ui.mapping import SepalMap
 
 import component.scripts.utils as cu
 import component.parameter as param
@@ -32,8 +33,7 @@ class InputsView(cw.Card):
     deactivate_coords = Bool(True).tag(sync=True)
     """Wheter to active the coordinates the coordinate fields or not"""
 
-    def __init__(self, model, map_, *args, **kwargs):
-
+    def __init__(self, model, map_: SepalMap, *args, **kwargs):
         self.class_ = "d-block pa-2"
 
         super().__init__(*args, **kwargs)
@@ -83,7 +83,7 @@ class InputsView(cw.Card):
 
         self.btn.on_event("click", self.get_upstream)
 
-    @su.loading_button(debug=True)
+    @su.loading_button()
     def get_upstream(self, *args):
         """Get the upstream catchments from the given coordinates"""
 
