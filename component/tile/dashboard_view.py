@@ -228,6 +228,10 @@ class DetailedStat(sw.Layout):
         """Add catchment color palette to a filtered dataframe. Useful when the 
         dataframe has been grouped by any other variable and the color is lost."""
 
+        # if the color is already in the dataframe, remove it
+        if "catch_color" in dst_df.columns:
+            dst_df = dst_df.drop("catch_color", axis=1)
+
         return pd.merge(
             dst_df,
             self.model.zonal_df.groupby(["basin"]).first()[["catch_color"]].reset_index(),

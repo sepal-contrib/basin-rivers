@@ -5,15 +5,12 @@ import ipyvuetify as v
 
 import sepal_ui.sepalwidgets as sw
 import sepal_ui.scripts.utils as su
+from sepal_ui.mapping import SepalMap
 
 import component.scripts.utils as cu
 import component.parameter as param
 import component.widget as cw
 from component.message import cm
-
-from geopandas import GeoDataFrame
-from geemap import ee_to_geojson
-
 
 
 import ee
@@ -36,8 +33,7 @@ class InputsView(cw.Card):
     deactivate_coords = Bool(True).tag(sync=True)
     """Wheter to active the coordinates the coordinate fields or not"""
 
-    def __init__(self, model, map_, *args, **kwargs):
-
+    def __init__(self, model, map_: SepalMap, *args, **kwargs):
         self.class_ = "d-block pa-2"
 
         super().__init__(*args, **kwargs)
@@ -87,7 +83,7 @@ class InputsView(cw.Card):
 
         self.btn.on_event("click", self.get_upstream)
 
-    @su.loading_button(debug=True)
+    @su.loading_button()
     def get_upstream(self, *args):
         """Get the upstream catchments from the given coordinates"""
 
@@ -101,7 +97,7 @@ class InputsView(cw.Card):
 
         upstream_catch = self.model.get_upstream_fc()
 
-        self.model.data = ee_to_geojson(upstream_catch)
+        self.model.data = upstream_catch.getInfo()
 
         # Create GeoJSON ipyleaflet object
         upstream_catch_gj = GeoJSON(
@@ -120,11 +116,9 @@ class InputsView(cw.Card):
         forest_change = self.model.get_gfc(upstream_catch.geometry()).set(param.gfc_vis)
 
         # Get bounds and zoom to the object
-        
-        self.map_.add_legend(legend_title="Legend", legend_dict=param.LEGEND)
-        # Do this trick to remove the scrolling bar in the legend output
-        self.map_.legend_widget.layout = Layout(width="95px", overflow="none")
-        
+        if not hasattr(self.map_, "legend"):
+            self.map_.add_legend(title="Legend", legend_dict=param.LEGEND)
+
         self.map_.zoom_bounds(self.model.get_bounds(self.model.data))
         self.map_.addLayer(forest_change, {}, "Forest change")
         self.map_.add_layer(upstream_catch_gj)

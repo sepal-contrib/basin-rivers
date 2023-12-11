@@ -12,17 +12,15 @@ from component.message import cm
 
 
 class MapTile(SepalMap):
-
     lat = CFloat(1.985, allow_none=True).tag(sync=True)
     lon = CFloat(-76.018, allow_none=True).tag(sync=True)
 
     def __init__(self, model, *args, **kwargs):
-
         self.model = model
 
         kwargs["basemaps"] = [
             "TERRAIN",
-            "Google Satellite",
+            "SATELLITE",
         ]
         kwargs["world_copy_jump"] = True
         kwargs["gee"] = False
@@ -31,7 +29,7 @@ class MapTile(SepalMap):
 
         self.zoom = 10
         self.center = [self.lat, self.lon]
-        self.layout.height="85vh"
+        self.layout.height = "85vh"
 
         self.trash_btn = TrashMenu()
 
@@ -55,13 +53,13 @@ class MapTile(SepalMap):
         self.trash_btn.on_event("trash_point", self.trash_event)
         self.trash_btn.on_event("trash_selection", self.trash_event)
 
-    def add_layer(self, layer):
+    def add_layer(self, layer, *args, **kwargs):
         """Add layer and check its name"""
 
         if layer.name == param.marker_name:
             self.trash_btn.show()
 
-        super().add_layer(layer)
+        super().add_layer(layer, *args, **kwargs)
 
     def trash_event(self, widget, event, data):
         """restore coordinates and link lat-lon widgets"""
@@ -75,7 +73,6 @@ class MapTile(SepalMap):
                 self.model.lon_link.link()
 
         elif widget._metadata["name"] == "trash_selection":
-
             self.model.selected_hybas = []
 
     def restore_coordinates(self, *args):
@@ -86,20 +83,16 @@ class MapTile(SepalMap):
         self.model.marker = False
 
     def return_coordinates(self, **kwargs):
-
         """Synchronize the cursor coordinates in the map with lat-lon traits"""
 
         if not self.model.manual:
-
             # Only update model coordinates when the widgets are linked
             if self.model.lat_link.linked:
-
                 lat, lon = kwargs["coordinates"]
                 self.lat = round(lat, 3)
                 self.lon = round(lon, 3)
 
         if kwargs.get("type") == "click":
-
             # Stop the comunication between widgets after select the point
             # To avoid changing the captured coordinates
             self.model.lat_link.unlink()
@@ -146,7 +139,6 @@ class MapTile(SepalMap):
 
 class TrashMenu(sw.Menu):
     def __init__(self, *args, **kwargs):
-
         super().__init__(*args, **kwargs)
 
         self.offset_x = True
