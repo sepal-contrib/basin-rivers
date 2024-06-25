@@ -15,8 +15,6 @@ from component.message import cm
 
 import ee
 
-ee.Initialize()
-
 __all__ = ["InputsView"]
 
 

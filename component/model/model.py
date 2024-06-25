@@ -15,8 +15,6 @@ import ee
 import json
 from geopandas import GeoDataFrame
 
-ee.Initialize()
-
 
 class BasinModel(Model):
 
@@ -28,9 +26,9 @@ class BasinModel(Model):
 
     level = Int(8).tag(sync=True)
     "int: target level of the catchment"
-    
+
     method = Unicode("").tag(sync=True)
-    "Unicode: Selection basin id method (all - filter)" 
+    "Unicode: Selection basin id method (all - filter)"
 
     selected_hybas = List([]).tag(sync=True)
     "list: current selected hybasid(s) from the dropdown base list"
@@ -43,19 +41,18 @@ class BasinModel(Model):
 
     marker = Bool(False).tag(sync=True)
     "bool: whether a marker (AOI) is set or not"
-    
-    # Statistics 
+
+    # Statistics
     ready = Bool(False).tag(sync=True)
-    
+
     sett_timespan = List([2010, 2020]).tag(sync=True)
     "list: user selected span of time in the statistics settings panel"
-    
-    selected_var = Unicode('').tag(sync=True)
+
+    selected_var = Unicode("").tag(sync=True)
     "str: current selected variable from pie chart or variable selector widget"
-    
+
     selected_hybasid_chart = List([]).tag(sync=True)
     "list: selected hybasid(s) from the statistics dashboard list or from catchments pie"
-    
 
     def __init__(self):
         """
@@ -220,13 +217,13 @@ class BasinModel(Model):
 
         """
 
-        if self.method=="filter" and not self.selected_hybas:
+        if self.method == "filter" and not self.selected_hybas:
             raise Exception("Please select a subcatchment.")
 
         feature_collection = self.base_basin.filter(
             ee.Filter.inList(
-                "HYBAS_ID", 
-                self.selected_hybas if self.method != "all" else self.hybasin_list
+                "HYBAS_ID",
+                self.selected_hybas if self.method != "all" else self.hybasin_list,
             )
         )
 
@@ -240,7 +237,7 @@ class BasinModel(Model):
                 scale=ee.Image(param.gfc_dataset).projection().nominalScale(),
             )
         ).getInfo()
-    
+
     @staticmethod
     def get_dataframe(result):
         """parse reduce region result as Pandas Dataframe
@@ -269,35 +266,40 @@ class BasinModel(Model):
             .reset_index()
             .rename(columns={"index": "basin", "value": "area"})
         )
-        
+
         # Prepare base dataframe
         df["basin"] = df.basin.astype(str)
         df["variable"] = df.variable.astype(int)
         df["group"] = df["variable"].apply(lambda x: cp.gfc_translation[x])
 
         # Create a year label and set 0 to everything is not forest-loss
-        df["year"] = df["variable"].apply(lambda x: x+2000 if x<=20 else 0).astype(int)
+        df["year"] = (
+            df["variable"].apply(lambda x: x + 2000 if x <= 20 else 0).astype(int)
+        )
 
         # Add a color for every catchment
         color_palette = np.array(
             sns.color_palette("hls", len(df.basin.unique())).as_hex()
         )
-        
+
         random.shuffle(color_palette)
 
-        df['catch_color'] = color_palette[pd.factorize(df.basin)[0]]
-        
+        df["catch_color"] = color_palette[pd.factorize(df.basin)[0]]
+
         return df
 
-    def get_overall_pie_df(self,):
+    def get_overall_pie_df(
+        self,
+    ):
         """Create a grouped dataframe to display overall pie statistics"""
 
         grouped_df = self.zonal_df.groupby(["group"]).sum().reset_index()
-        grouped_df["color"] = grouped_df["group"].apply(lambda x: param.gfc_colors_dict[x])
-        
+        grouped_df["color"] = grouped_df["group"].apply(
+            lambda x: param.gfc_colors_dict[x]
+        )
+
         return grouped_df
-    
+
     def get_bar_df(self):
-        
+
         catch_area_df = self.base_df.groupby(["basin"]).sum().reset_index()
-        

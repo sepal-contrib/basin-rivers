@@ -4,8 +4,6 @@ from ipyleaflet import Marker
 
 import component.parameter as param
 
-ee.Initialize()
-
 
 def get_hydroshed(level):
     """Return a Feature collection based on the provided level"""
@@ -59,12 +57,10 @@ def get_marker(coordinates):
     return marker
 
 
-
-
 def get_pull(grouped_df, target_group, size):
     """Creates a pull list based on target_group"""
 
-    pull = len(grouped_df.index)*[0]
+    pull = len(grouped_df.index) * [0]
 
     # Do not pull
     if target_group is None:

@@ -1,7 +1,5 @@
 import ee
 
-ee.Initialize()
-
 from traitlets import Bool, link
 from ipywidgets import Output
 from ipyleaflet import GeoJSON
