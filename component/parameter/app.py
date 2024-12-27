@@ -3,7 +3,7 @@ from sepal_ui import color as sc
 
 gfc_min_year = 0
 gfc_max_year = 20
-gfc_dataset = "UMD/hansen/global_forest_change_2020_v1_8"
+gfc_dataset = "UMD/hansen/global_forest_change_2023_v1_11"
 gfc_names = {30: "non_forest", 40: "forest", 50: "gain", 51: "gain_loss"}
 
 year_range = list(range(0, gfc_max_year + 1))
@@ -19,16 +19,12 @@ gfc_labels = [f"loss_{y+2000}" for y in year_range] + [
 
 gfc_str_code = []
 
-GFC = {
-    
-}
+GFC = {}
 
 
 # Create a group for each category and a translation dictionary
-gfc_groups = ["loss"]*(gfc_max_year+1) + gfc_labels[gfc_max_year+1:]
-gfc_translation = dict(
-    zip(gfc_classes, gfc_groups)
-)
+gfc_groups = ["loss"] * (gfc_max_year + 1) + gfc_labels[gfc_max_year + 1 :]
+gfc_translation = dict(zip(gfc_classes, gfc_groups))
 
 year_items = [{"text": str(y + 2000), "value": y} for y in year_range]
 
@@ -47,4 +43,3 @@ display_prop = ["HYBAS_ID"]
 
 # Define a maximum number of catchments to display on the detailed graphs
 MAX_CATCH_NUMBER = 10
-
