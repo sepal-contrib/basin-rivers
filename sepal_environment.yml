@@ -5,7 +5,6 @@ channels:
 dependencies:
   - python=3.10
   - pyproj  # Always include to avoid PROJ conflicts
-  - rasterio
   - seaborn
   - matplotlib
   - pip
@@ -14,3 +13,4 @@ dependencies:
   - pip:
     - sepal_ui==2.22.1
     - git+https://github.com/openforis/earthengine-api.git@v1.1.5rc0#egg=earthengine-api&subdirectory=python
+    - rasterio<=1.4.3
