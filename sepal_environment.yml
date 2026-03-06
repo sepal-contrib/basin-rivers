@@ -5,6 +5,7 @@ channels:
 dependencies:
   - python=3.10
   - pyproj # Always include to avoid PROJ conflicts
+  - setuptools<=80
   - rasterio
   - seaborn
   - matplotlib
