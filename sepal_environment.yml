@@ -15,4 +15,3 @@ dependencies:
   - pip:
       - sepal_ui==2.22.1
       - git+https://github.com/openforis/earthengine-api.git@v1.1.5rc0#egg=earthengine-api&subdirectory=python
-      - localtileserver<=0.10.0
