@@ -15,4 +15,3 @@ dependencies:
   - plotly=5.24.1
   - pip:
       - git+https://github.com/openforis/earthengine-api.git@v1.1.5rc0#egg=earthengine-api&subdirectory=python
-      - localtileserver<=0.10.0
